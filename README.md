@@ -18,7 +18,7 @@ Minijuegos educativos para un Breakout EDU de 5.º de Primaria, pensados para in
 ## Insertar en Genially
 
 ```html
-<iframe src="https://USUARIO.github.io/breakout-edu/juego1/" width="1280" height="720" style="border:0" allowfullscreen></iframe>
+<iframe src="https://breakout-viu.github.io/breakout-edu/juego1/" width="1280" height="720" style="border:0" allowfullscreen></iframe>
 ```
 
 El juego mantiene la proporción 16:9 y se adapta a cualquier tamaño de iframe.
