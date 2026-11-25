@@ -3,23 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Rescate submarino</title>
+<title>Misión 5 · Detectives submarinos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Orbitron:wght@600;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --u: 12.8px;             /* 1 unidad = 1 % del ancho del escenario (lo calcula el JS) */
-    --navy: #0b2545;
-    --ink: #0d1b2a;
-    --yellow: #ffd23f;
-    --yellow-dark: #c99a00;
+    --u: 12.8px;               /* 1 unidad = 1 % del ancho del escenario (lo calcula el JS) */
+    --turquesa: #2EE6D6;
+    --azul: #0A2A4A;
+    --rojo: #FF3B3B;
+    --tinta: #04121f;
+    --titulo: "Orbitron", "Trebuchet MS", Verdana, Arial, sans-serif;
+    --texto: "Nunito", "Trebuchet MS", "Segoe UI", Verdana, Arial, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { width: 100%; height: 100%; overflow: hidden; background: #04121f; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #020c16; }
   body {
     display: flex; align-items: center; justify-content: center;
-    font-family: "Trebuchet MS", "Segoe UI", Verdana, Arial, sans-serif;
-    color: #fff;
-    -webkit-user-select: none; user-select: none;
-    -webkit-tap-highlight-color: transparent;
+    font-family: var(--texto); color: #fff;
+    -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
   }
 
   /* Escenario 16:9 que se adapta al iframe */
@@ -28,39 +31,49 @@
 
   /* ---------- Marcadores ---------- */
   #hud {
-    position: absolute; top: calc(var(--u) * 1.2); left: calc(var(--u) * 1.4); right: calc(var(--u) * 1.4);
-    display: flex; justify-content: space-between; align-items: flex-start;
-    pointer-events: none; opacity: 0; transition: opacity .5s;
+    position: absolute; top: calc(var(--u) * 1.1); left: calc(var(--u) * 1.3); right: calc(var(--u) * 1.3);
+    display: flex; justify-content: space-between; align-items: flex-start; gap: calc(var(--u) * 1);
+    pointer-events: none; opacity: 0; transition: opacity .4s;
   }
   #hud.visible { opacity: 1; }
   .pill {
-    display: flex; align-items: center; gap: calc(var(--u) * 1);
-    background: rgba(6, 26, 48, .82);
-    border: calc(var(--u) * .2) solid rgba(255, 255, 255, .35);
+    display: flex; align-items: center; gap: calc(var(--u) * .8);
+    background: rgba(4, 22, 40, .84);
+    border: calc(var(--u) * .2) solid rgba(46, 230, 214, .45);
     border-radius: calc(var(--u) * 2);
-    padding: calc(var(--u) * .7) calc(var(--u) * 1.5);
-    font-weight: bold; font-size: calc(var(--u) * 2);
+    padding: calc(var(--u) * .6) calc(var(--u) * 1.3);
+    font-weight: 800; font-size: calc(var(--u) * 1.8);
     box-shadow: 0 calc(var(--u) * .3) calc(var(--u) * 1) rgba(0, 0, 0, .3);
+    white-space: nowrap;
   }
-  .pill svg { width: calc(var(--u) * 2.6); height: calc(var(--u) * 2.6); flex: none; }
+  .pill svg { width: calc(var(--u) * 2.3); height: calc(var(--u) * 2.3); flex: none; }
   .bar {
-    width: calc(var(--u) * 16); height: calc(var(--u) * 1.9);
+    width: calc(var(--u) * 12); height: calc(var(--u) * 1.7);
     background: rgba(255, 255, 255, .15);
     border: calc(var(--u) * .2) solid rgba(255, 255, 255, .6);
     border-radius: 999px; overflow: hidden;
   }
-  .bar i {
-    display: block; height: 100%; width: 100%; border-radius: 999px;
-    background: linear-gradient(#7af5a8, #20b358);
-    transition: width .7s ease, background .3s;
-  }
+  .bar i { display: block; height: 100%; width: 100%; border-radius: 999px; background: linear-gradient(#8ff5ec, #1fb8aa); transition: width .7s ease, background .3s; }
   .bar.mid i { background: linear-gradient(#ffd27a, #f39c12); }
-  .bar.low i { background: linear-gradient(#ff8a8a, #e63946); animation: blink 1s infinite; }
-  #counter b { font-size: calc(var(--u) * 2.8); color: var(--yellow); display: inline-block; min-width: 2.2em; text-align: center; }
+  .bar.low i { background: linear-gradient(#ff9a9a, var(--rojo)); animation: blink 1s infinite; }
+  #nivelPill { font-family: var(--titulo); font-weight: 700; font-size: calc(var(--u) * 1.45); letter-spacing: .04em; color: var(--turquesa); }
+  #nivelPill .extra { color: #fff; font-family: var(--texto); font-weight: 800; font-size: calc(var(--u) * 1.6); letter-spacing: 0; }
+  .derecha { display: flex; flex-direction: column; align-items: flex-end; gap: calc(var(--u) * .7); }
+  #countNum { font-family: var(--titulo); font-size: calc(var(--u) * 2.2); color: var(--turquesa); min-width: 2.4em; text-align: center; display: inline-block; }
+  #reiniciarBtn {
+    pointer-events: auto; cursor: pointer;
+    font: inherit; font-family: var(--texto); font-weight: 800; font-size: calc(var(--u) * 1.6);
+    color: #fff; background: rgba(4, 22, 40, .84);
+    border: calc(var(--u) * .2) solid rgba(255, 255, 255, .55); border-radius: 999px;
+    padding: calc(var(--u) * .45) calc(var(--u) * 1.3);
+    display: flex; align-items: center; gap: calc(var(--u) * .6);
+  }
+  #reiniciarBtn:hover { border-color: var(--turquesa); }
+  #reiniciarBtn svg { width: calc(var(--u) * 1.8); height: calc(var(--u) * 1.8); }
   .pop { animation: pop .6s ease; }
   .hit { animation: shake .45s ease; }
   @keyframes blink { 50% { opacity: .45; } }
-  @keyframes pop { 40% { transform: scale(1.18); } }
+  @keyframes pop { 40% { transform: scale(1.2); } }
   @keyframes shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
 
   /* ---------- Pantallas superpuestas ---------- */
@@ -68,84 +81,92 @@
     position: absolute; left: 0; top: 0; width: 100%; height: 100%;
     display: flex; align-items: center; justify-content: center;
     padding: calc(var(--u) * 2);
-    background: rgba(3, 18, 36, .55);
-    opacity: 0; visibility: hidden; transition: opacity .4s, visibility .4s;
+    background: rgba(2, 12, 24, .58);
+    opacity: 0; visibility: hidden; transition: opacity .35s, visibility .35s;
   }
   .overlay.show { opacity: 1; visibility: visible; }
-  .overlay.top { align-items: flex-start; padding-top: calc(var(--u) * 8); background: rgba(3, 18, 36, .12); }
+  .overlay.clara { background: rgba(2, 12, 24, .3); }
   .panel {
-    width: 100%; max-width: calc(var(--u) * 74);
-    background: linear-gradient(180deg, #15467a, #0b2545);
-    border: calc(var(--u) * .35) solid #7fd1ff;
-    border-radius: calc(var(--u) * 2.4);
-    padding: calc(var(--u) * 2.6) calc(var(--u) * 3.6);
+    width: 100%; max-width: calc(var(--u) * 76); max-height: 100%; overflow: auto;
+    background: linear-gradient(180deg, rgba(14, 58, 98, .97), rgba(10, 42, 74, .97));
+    border: calc(var(--u) * .3) solid var(--turquesa);
+    border-radius: calc(var(--u) * 2.2);
+    padding: calc(var(--u) * 2.4) calc(var(--u) * 3.4);
     text-align: center;
-    box-shadow: 0 calc(var(--u) * 1) calc(var(--u) * 4) rgba(0, 0, 0, .5);
-    transform: scale(.88); transition: transform .45s cubic-bezier(.2, 1.4, .4, 1);
+    box-shadow: 0 0 calc(var(--u) * 3) rgba(46, 230, 214, .35), 0 calc(var(--u) * 1) calc(var(--u) * 4) rgba(0, 0, 0, .5);
+    transform: scale(.9); transition: transform .4s cubic-bezier(.2, 1.4, .4, 1);
   }
   .overlay.show .panel { transform: scale(1); }
-  h1 {
-    font-size: calc(var(--u) * 5.6); line-height: 1.1; color: var(--yellow);
-    text-shadow: 0 calc(var(--u) * .35) 0 #8a5a00, 0 0 calc(var(--u) * 2) rgba(255, 210, 63, .35);
-    margin-bottom: calc(var(--u) * 1.2);
-  }
-  h1.sad { color: #ffb3b3; text-shadow: 0 calc(var(--u) * .35) 0 #7a1020; font-size: calc(var(--u) * 4.4); }
-  h2 { font-size: calc(var(--u) * 3); line-height: 1.25; }
-  p { font-size: calc(var(--u) * 2.4); line-height: 1.4; margin: .35em 0; }
+  h1, h2 { font-family: var(--titulo); line-height: 1.15; }
+  h1 { font-size: calc(var(--u) * 4); font-weight: 900; color: var(--turquesa); text-shadow: 0 0 calc(var(--u) * 1.4) rgba(46, 230, 214, .55); margin-bottom: calc(var(--u) * 1); letter-spacing: .03em; }
+  h1.alarma { color: var(--rojo); text-shadow: 0 0 calc(var(--u) * 1.4) rgba(255, 59, 59, .55); font-size: calc(var(--u) * 3.4); }
+  h2 { font-size: calc(var(--u) * 2.5); font-weight: 700; }
+  p { font-size: calc(var(--u) * 2.3); line-height: 1.4; margin: .35em 0; font-weight: 700; }
   .tag {
-    display: inline-block; background: #2ec4b6; color: var(--ink); font-weight: bold;
-    font-size: calc(var(--u) * 1.8); border-radius: 999px;
-    padding: calc(var(--u) * .4) calc(var(--u) * 1.6); margin-bottom: calc(var(--u) * 1.2);
+    display: inline-block; font-family: var(--titulo); font-weight: 700; letter-spacing: .05em;
+    background: var(--turquesa); color: var(--azul);
+    font-size: calc(var(--u) * 1.5); border-radius: 999px;
+    padding: calc(var(--u) * .4) calc(var(--u) * 1.5); margin-bottom: calc(var(--u) * 1.1);
   }
   .btn {
-    font: inherit; font-weight: bold; font-size: calc(var(--u) * 2.8);
-    background: var(--yellow); color: var(--ink);
+    font: inherit; font-family: var(--titulo); font-weight: 900; font-size: calc(var(--u) * 2.3); letter-spacing: .04em;
+    background: var(--turquesa); color: var(--azul);
     border: none; border-radius: 999px; cursor: pointer;
-    padding: calc(var(--u) * 1.1) calc(var(--u) * 4.4);
-    margin-top: calc(var(--u) * 2);
-    box-shadow: 0 calc(var(--u) * .5) 0 var(--yellow-dark);
+    padding: calc(var(--u) * 1.1) calc(var(--u) * 4);
+    margin-top: calc(var(--u) * 1.8);
+    box-shadow: 0 calc(var(--u) * .5) 0 #139a8f, 0 0 calc(var(--u) * 2) rgba(46, 230, 214, .45);
     transition: transform .12s, box-shadow .12s;
   }
   .btn:hover { transform: translateY(-2px); }
-  .btn:active { transform: translateY(calc(var(--u) * .3)); box-shadow: 0 calc(var(--u) * .2) 0 var(--yellow-dark); }
-  .btn:focus-visible, .opt:focus-visible { outline: calc(var(--u) * .4) solid #fff; outline-offset: calc(var(--u) * .4); }
+  .btn:active { transform: translateY(calc(var(--u) * .3)); box-shadow: 0 calc(var(--u) * .2) 0 #139a8f; }
+  .btn:focus-visible, .opt:focus-visible, #reiniciarBtn:focus-visible { outline: calc(var(--u) * .4) solid #fff; outline-offset: calc(var(--u) * .4); }
 
   /* Pregunta */
-  .options { display: flex; flex-direction: column; gap: calc(var(--u) * 1.1); margin-top: calc(var(--u) * 2); }
+  .options { display: flex; flex-direction: column; gap: calc(var(--u) * 1); margin-top: calc(var(--u) * 1.8); }
   .opt {
-    font: inherit; font-weight: bold; font-size: calc(var(--u) * 2.5); text-align: left;
-    display: flex; align-items: center; gap: calc(var(--u) * 1.4);
-    background: #fff; color: var(--ink);
-    border: calc(var(--u) * .3) solid #cfe8ff; border-radius: calc(var(--u) * 1.4);
-    padding: calc(var(--u) * .9) calc(var(--u) * 1.6);
+    font: inherit; font-family: var(--texto); font-weight: 800; font-size: calc(var(--u) * 2.3); text-align: left;
+    display: flex; align-items: center; gap: calc(var(--u) * 1.3);
+    background: #fff; color: var(--tinta);
+    border: calc(var(--u) * .3) solid #c9f3ef; border-radius: calc(var(--u) * 1.4);
+    padding: calc(var(--u) * .8) calc(var(--u) * 1.5);
     cursor: pointer; transition: transform .12s, background .2s, border-color .2s;
   }
   .opt b {
     flex: none; display: inline-flex; align-items: center; justify-content: center;
-    width: 1.6em; height: 1.6em; border-radius: 50%; background: #13315c; color: #fff;
+    width: 1.6em; height: 1.6em; border-radius: 50%; background: var(--azul); color: #fff; font-family: var(--titulo); font-size: .85em;
   }
-  .opt:hover:not(:disabled) { transform: scale(1.02); border-color: var(--yellow); }
-  .opt:disabled { cursor: default; opacity: .75; }
-  .opt.ok { background: #7cf0a8; border-color: #1e9e52; opacity: 1; }
-  .opt.ok b { background: #1e9e52; }
-  .opt.ko { background: #ffb3b3; border-color: #c0392b; opacity: 1; animation: shake .45s; }
-  .opt.ko b { background: #c0392b; }
-  .feedback { min-height: 1.4em; font-size: calc(var(--u) * 2.3); font-weight: bold; margin-top: calc(var(--u) * 1.3); }
-  .feedback.ok { color: #8dffb5; }
+  .opt:hover:not(:disabled) { transform: scale(1.02); border-color: var(--turquesa); }
+  .opt:disabled { cursor: default; opacity: .7; }
+  .opt.ok { background: #a6f7ee; border-color: #13a596; opacity: 1; }
+  .opt.ok b { background: #13a596; }
+  .opt.ko { background: #ffc4c4; border-color: var(--rojo); opacity: 1; animation: shake .45s; }
+  .opt.ko b { background: var(--rojo); }
+  #qText { font-family: var(--texto); font-weight: 800; font-size: calc(var(--u) * 2.8); line-height: 1.25; }
+  .feedback { min-height: 1.3em; font-size: calc(var(--u) * 2.2); font-weight: 800; margin-top: calc(var(--u) * 1.1); }
+  .feedback.ok { color: #8ff5ec; }
   .feedback.ko { color: #ffc2c2; }
-
-  /* Adivinanza */
-  .riddle {
-    background: #fff8e1; color: #3b2a00;
-    border-radius: calc(var(--u) * 1.6);
-    padding: calc(var(--u) * 1.8) calc(var(--u) * 2.4);
-    margin: calc(var(--u) * 1.6) 0;
-    font-size: calc(var(--u) * 2.7); line-height: 1.4; font-style: italic; font-weight: bold;
-    box-shadow: inset 0 0 0 calc(var(--u) * .3) #ffd27a;
+  .sabias {
+    margin-top: calc(var(--u) * 1.2);
+    border: calc(var(--u) * .25) solid var(--turquesa); border-radius: calc(var(--u) * 1.6);
+    background: rgba(46, 230, 214, .12);
+    padding: calc(var(--u) * 1.4) calc(var(--u) * 2);
   }
-  .hint { display: flex; align-items: center; gap: calc(var(--u) * 1.6); text-align: left; }
-  .hint svg { width: calc(var(--u) * 7); height: calc(var(--u) * 7); flex: none; }
-  .hint p { font-size: calc(var(--u) * 2.3); }
+  .sabias h2 { color: var(--turquesa); font-size: calc(var(--u) * 2.2); margin-bottom: calc(var(--u) * .6); }
+  .sabias p { font-size: calc(var(--u) * 2.5); }
+  .oculto { display: none !important; }
+
+  /* Final */
+  .adivinanza {
+    background: #fff8e1; color: #2d2100;
+    border-radius: calc(var(--u) * 1.6);
+    padding: calc(var(--u) * 1.6) calc(var(--u) * 2.2);
+    margin: calc(var(--u) * 1.3) 0;
+    font-size: calc(var(--u) * 2.75); line-height: 1.38; font-style: italic; font-weight: 800;
+    box-shadow: inset 0 0 0 calc(var(--u) * .35) #ffd27a, 0 0 calc(var(--u) * 2) rgba(255, 210, 122, .35);
+  }
+  .caracola { color: var(--turquesa); font-size: calc(var(--u) * 2.3); font-weight: 800; }
+  .pista { color: #cfeffd; font-size: calc(var(--u) * 2.1); }
+  .pista b { color: var(--turquesa); }
 </style>
 </head>
 <body>
@@ -155,25 +176,31 @@
   <!-- Marcadores -->
   <div id="hud">
     <div class="pill" id="oxyPill">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="12" cy="19" r="8" fill="none" stroke="#bde0fe" stroke-width="3"/><circle cx="23" cy="9" r="5" fill="none" stroke="#bde0fe" stroke-width="3"/><circle cx="9.5" cy="16" r="2" fill="#fff"/></svg>
+      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="12" cy="19" r="8" fill="none" stroke="#bdf6f1" stroke-width="3"/><circle cx="23" cy="9" r="5" fill="none" stroke="#bdf6f1" stroke-width="3"/><circle cx="9.5" cy="16" r="2" fill="#fff"/></svg>
       <span>Oxígeno</span>
       <div class="bar" id="oxyBar"><i id="oxyFill"></i></div>
     </div>
-    <div class="pill" id="counter" aria-live="polite">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="#2ecc71"/><path d="M10 18 L16 8 L22 18 Z" fill="#fff"/><rect x="11" y="19" width="10" height="5" rx="1.5" fill="#fff"/></svg>
-      <span>Residuos limpiados</span>
-      <b id="countNum">0/5</b>
+    <div class="pill" id="nivelPill">NIVEL 1</div>
+    <div class="derecha">
+      <div class="pill" id="counter" aria-live="polite">
+        <span>Residuos</span>
+        <b id="countNum">0/3</b>
+      </div>
+      <button id="reiniciarBtn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><path d="M4 4v5h5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="reiniciarTxt">Reiniciar nivel</span>
+      </button>
     </div>
   </div>
 
   <!-- Pantalla inicial -->
   <div class="overlay show" id="startScreen">
     <div class="panel">
-      <span class="tag">ODS 14 · Vida submarina</span>
-      <h1>Rescate submarino</h1>
-      <p>Mueve el submarino con las flechas, con WASD o tocando la pantalla.</p>
-      <p>Acércate a cada residuo y responde bien para limpiar el mar y salvar el arrecife.</p>
-      <button class="btn" id="startBtn" type="button">Empezar</button>
+      <span class="tag" id="startTag"></span>
+      <h1 id="startTitle"></h1>
+      <p id="startText"></p>
+      <p class="pista" id="startControls"></p>
+      <button class="btn" id="startBtn" type="button"></button>
     </div>
   </div>
 
@@ -184,39 +211,40 @@
       <h2 id="qText"></h2>
       <div class="options" id="qOpts"></div>
       <div class="feedback" id="qFb" aria-live="polite"></div>
-    </div>
-  </div>
-
-  <!-- Misión cumplida -->
-  <div class="overlay top" id="winScreen">
-    <div class="panel">
-      <h1>¡Misión cumplida!</h1>
-      <p>Has limpiado el fondo del mar y el arrecife ha recuperado todo su color.</p>
-      <button class="btn" id="riddleBtn" type="button">Ver la adivinanza</button>
-    </div>
-  </div>
-
-  <!-- Adivinanza -->
-  <div class="overlay" id="riddleScreen">
-    <div class="panel">
-      <h1>Adivinanza</h1>
-      <div class="riddle" id="riddleText"></div>
-      <div class="hint">
-        <svg viewBox="0 0 64 64" aria-hidden="true">
-          <path d="M8 46 C4 28 20 8 40 10 C56 12 62 30 52 40 C44 48 30 46 29 36 C28 29 37 26 41 32" fill="#ffcfb3" stroke="#e07a5f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M8 46 L50 46 C58 46 60 54 52 56 L14 56 C9 56 7 51 8 46 Z" fill="#ffcfb3" stroke="#e07a5f" stroke-width="4" stroke-linejoin="round"/>
-        </svg>
-        <p id="hintText"></p>
+      <div class="sabias oculto" id="qSabias">
+        <h2 id="qSabiasTitulo"></h2>
+        <p id="qSabiasTexto"></p>
       </div>
+      <button class="btn oculto" id="qContinuar" type="button"></button>
+    </div>
+  </div>
+
+  <!-- Zona limpia -->
+  <div class="overlay clara" id="levelScreen">
+    <div class="panel">
+      <h1 id="levelTitle"></h1>
+      <h2 id="levelSub"></h2>
+      <p class="pista" id="levelNext" style="margin-top:calc(var(--u)*1.4)"></p>
+      <button class="btn" id="levelBtn" type="button"></button>
     </div>
   </div>
 
   <!-- Sin oxígeno -->
   <div class="overlay" id="overScreen">
     <div class="panel">
-      <h1 class="sad">Te has quedado sin oxígeno</h1>
-      <p>¡No te rindas! Repasa lo que sabes y vuelve a bucear.</p>
-      <button class="btn" id="retryBtn" type="button">Volver a intentar</button>
+      <h1 class="alarma" id="overTitle"></h1>
+      <p id="overText"></p>
+      <button class="btn" id="retryBtn" type="button"></button>
+    </div>
+  </div>
+
+  <!-- Final -->
+  <div class="overlay clara" id="finalScreen">
+    <div class="panel" style="max-width:calc(var(--u)*82)">
+      <h1 id="finalTitle"></h1>
+      <p id="finalIntro"></p>
+      <div class="adivinanza" id="finalRiddle"></div>
+      <p class="caracola" id="finalCaracola"></p>
     </div>
   </div>
 </div>
@@ -226,33 +254,117 @@
 'use strict';
 
 /* =====================================================================
-   CONFIGURACIÓN (edita aquí para cambiar preguntas o temática)
-   - tipo: dibujo del residuo -> 'botella' | 'lata' | 'bolsa' | 'red' | 'pajita'
-   - x, y: posición en el fondo (escenario de 1280 x 720)
-   - correcta: índice (0, 1 o 2) de la opción correcta
+   CONFIGURACIÓN (edita aquí textos, niveles y preguntas)
+   - tipo de residuo: 'botella' | 'bolsa' | 'lata' | 'colilla' | 'pajita' | 'red' | 'vidrio' | 'bolsaRota'
+   - x, y: posición en el fondo (escenario de 1280 x 720; el fondo de arena está hacia y = 650)
+   - correcta: índice (0, 1 o 2) de la opción correcta. El orden se mezcla al mostrarla.
+   - fondo: 'desembocadura' | 'malvarrosa' | 'arrecife'
+   - corriente: null (sin corriente) o un objeto:
+       fuerza: empuje medio en px/s (velocidad normal del submarino = 330; 165 ≈ avanzar a la mitad contra ella)
+       direccion: 1 = hacia la derecha, -1 = hacia la izquierda
+       rafagas: true = va por ráfagas (más fuerte unos segundos y luego más suave)
+       variacion: cuánto cambia con las ráfagas (0.3 = entre un 70 % y un 130 % de la fuerza)
+       periodo: segundos que dura un ciclo de ráfaga
+     El empuje nunca pasa del 75 % de la velocidad del submarino, para que siempre pueda avanzar.
+   - oscuridad: true/false
    ===================================================================== */
 const CONFIG = {
-  oxigenoPorFallo: 25,   // % de oxígeno que se pierde en cada fallo (4 fallos = sin oxígeno)
-  preguntas: [
-    { tipo: 'botella', nombre: 'Botella de plástico', x: 300, y: 612,
-      pregunta: '¿Cuánto tarda aproximadamente una botella de plástico en degradarse en el mar?',
-      opciones: ['10 años', '100 años', '450 años'], correcta: 2 },
-    { tipo: 'lata', nombre: 'Lata de refresco', x: 545, y: 640,
-      pregunta: '¿En qué contenedor se tira una lata de refresco?',
-      opciones: ['Amarillo', 'Azul', 'Verde'], correcta: 0 },
-    { tipo: 'bolsa', nombre: 'Bolsa de plástico', x: 690, y: 290,
-      pregunta: '¿Por qué muchas tortugas marinas se comen bolsas de plástico?',
-      opciones: ['Las confunden con medusas', 'Les gusta su sabor', 'Las usan para hacer nidos'], correcta: 0 },
-    { tipo: 'red', nombre: 'Red de pesca', x: 960, y: 545,
-      pregunta: '¿Cuál de estos seres vivos del mar es productor?',
-      opciones: ['Las algas', 'El tiburón', 'El pulpo'], correcta: 0 },
-    { tipo: 'pajita', nombre: 'Pajita', x: 420, y: 370,
-      pregunta: '¿Qué Objetivo de Desarrollo Sostenible trata la vida submarina?',
-      opciones: ['ODS 4', 'ODS 14', 'ODS 7'], correcta: 1 }
-  ],
-  adivinanza: 'Floto sin huesos ni cerebro, soy casi transparente; las tortugas me buscan para comer, pero a veces encuentran plástico en mi lugar.',
-  pista: 'Busca la caracola escondida en la roca de la izquierda y escribe allí la solución de la adivinanza.'
-  // Solución (solo para el docente, no se muestra en el juego): MEDUSA
+  oxigenoPorFallo: 25,   // % de oxígeno que se pierde por fallo (4 fallos = sin oxígeno; se repite el nivel)
+  textos: {
+    etiquetaInicio: 'BREAKOUT · CÓDIGO AZUL',
+    titulo: 'MISIÓN 5 · DETECTIVES SUBMARINOS',
+    instruccion: 'Pilota el submarino, encuentra los residuos y responde para limpiar el fondo del mar.',
+    controles: 'Muévete con las <b>flechas</b>, <b>WASD</b> o <b>tocando la pantalla</b>.',
+    empezar: 'Empezar',
+    nivel: 'NIVEL',
+    residuos: 'Residuos',
+    reiniciarNivel: 'Reiniciar nivel',
+    correcto: '¡Correcto!',
+    fallo: '¡Oh, no! Pierdes oxígeno. Podrás intentarlo más tarde.',
+    sabiasQue: 'Sabías que…',
+    continuar: 'Continuar',
+    zonaLimpia: '¡Zona limpia!',
+    nivelSuperado: 'Nivel {n} superado',
+    siguienteZona: 'Siguiente zona: <b>{nombre}</b>. {aviso}',
+    seguir: 'Seguir',
+    sinOxigeno: 'Te has quedado sin oxígeno',
+    sinOxigenoTexto: '¡No pasa nada! Repites solo esta zona, con el oxígeno lleno.',
+    reintentar: 'Volver a intentar',
+    corriente: 'Corriente',
+    oscuridad: 'Usa el foco'
+  },
+  final: {
+    titulo: '¡Misión cumplida! El fondo marino está limpio.',
+    intro: 'Para recuperar el ARCHIVO 5 y su cifra del Código Azul, resolved esta adivinanza:',
+    adivinanza: '«Floto sin huesos ni cerebro, soy casi transparente; las tortugas me buscan para comer, pero a veces encuentran plástico en mi lugar.»',
+    caracola: '🐚 Arrastrad la caracola que hay junto a las rocas de la izquierda y escribid debajo la respuesta.'
+    // Solución (solo para el docente; no se muestra en el juego): MEDUSA
+  },
+  niveles: [
+    {
+      nombre: 'La desembocadura',
+      fondo: 'desembocadura',
+      corriente: null,
+      oscuridad: false,
+      aviso: '',
+      residuos: [
+        { tipo: 'lata', nombre: 'Lata', x: 1010, y: 628,
+          pregunta: '¿Cómo llegan muchos residuos de la ciudad hasta el mar?',
+          opciones: ['Los traen los peces', 'A través de los ríos, las alcantarillas y el viento', 'Caen de las nubes'], correcta: 1,
+          sabias: 'Lo que tiramos lejos del mar también puede acabar en él.' },
+        { tipo: 'botella', nombre: 'Botella de plástico', x: 360, y: 612,
+          pregunta: '¿Cuánto tiempo puede tardar una botella de plástico en degradarse?',
+          opciones: ['1 año', '50 años', 'Unos 450 años'], correcta: 2,
+          sabias: 'Por eso es tan importante que nunca llegue al mar.' },
+        { tipo: 'bolsa', nombre: 'Bolsa de plástico', x: 700, y: 300,
+          pregunta: '¿Por qué las bolsas de plástico son tan peligrosas para las tortugas marinas?',
+          opciones: ['Las confunden con medusas y se las comen', 'Les dan demasiado calor', 'Las usan para hacer nidos'], correcta: 0,
+          sabias: 'Al comérselas, se ponen muy enfermas.' }
+      ]
+    },
+    {
+      nombre: 'Frente a la Malvarrosa',
+      fondo: 'malvarrosa',
+      corriente: { fuerza: 165, direccion: 1, rafagas: true, variacion: 0.3, periodo: 7 },
+      oscuridad: false,
+      aviso: '¡Cuidado! Una corriente arrastra el submarino hacia un lado.',
+      residuos: [
+        { tipo: 'lata', nombre: 'Lata', x: 430, y: 640,
+          pregunta: '¿En qué contenedor se tira una lata de refresco?',
+          opciones: ['Amarillo', 'Azul', 'Verde'], correcta: 0,
+          sabias: 'En el amarillo van los envases: plásticos, latas y briks.' },
+        { tipo: 'colilla', nombre: 'Colilla', x: 790, y: 652,
+          pregunta: '¿Dónde hay que tirar una colilla de cigarro?',
+          opciones: ['En la arena, total es pequeña', 'En el contenedor amarillo', 'En una papelera o en el contenedor de resto (gris)'], correcta: 2,
+          sabias: 'Las colillas tienen sustancias tóxicas que contaminan el agua.' },
+        { tipo: 'pajita', nombre: 'Pajita', x: 1040, y: 320,
+          pregunta: '¿Qué es lo mejor para no generar residuos como esta pajita?',
+          opciones: ['Tirarla al mar', 'No usar pajitas o usar una reutilizable', 'Usar dos en vez de una'], correcta: 1,
+          sabias: 'Reducir es la mejor de las 3 R: reducir, reutilizar y reciclar.' }
+      ]
+    },
+    {
+      nombre: 'Arrecife profundo',
+      fondo: 'arrecife',
+      corriente: null,
+      oscuridad: true,
+      aviso: 'Está muy oscuro: solo verás lo que ilumine el foco del submarino.',
+      residuos: [
+        { tipo: 'red', nombre: 'Red de pesca', x: 960, y: 548,
+          pregunta: '¿Qué hace una red de pesca abandonada en el mar?',
+          opciones: ['Sirve de casa a los peces', 'Sigue atrapando peces, tortugas y delfines', 'Se deshace en una semana'], correcta: 1,
+          sabias: 'Por eso se las llama redes fantasma.' },
+        { tipo: 'vidrio', nombre: 'Botella de vidrio', x: 520, y: 626,
+          pregunta: '¿A qué contenedor va una botella de vidrio?',
+          opciones: ['Amarillo', 'Azul', 'Verde'], correcta: 2,
+          sabias: 'El vidrio se puede reciclar una y otra vez.' },
+        { tipo: 'bolsaRota', nombre: 'Bolsa rota en trocitos', x: 740, y: 320,
+          pregunta: '¿Qué le pasa al plástico con el paso del tiempo en el mar?',
+          opciones: ['Desaparece del todo', 'Se rompe en trocitos diminutos (microplásticos) que se comen los peces', 'Se convierte en arena'], correcta: 1,
+          sabias: 'Y esos microplásticos pueden acabar en nuestra comida.' }
+      ]
+    }
+  ]
 };
 
 /* ===================================================================== */
@@ -260,6 +372,7 @@ const CONFIG = {
 const W = 1280, H = 720;
 const $ = (id) => document.getElementById(id);
 const stage = $('stage'), cv = $('game'), ctx = cv.getContext('2d');
+const dark = document.createElement('canvas'), dctx = dark.getContext('2d');
 let scale = 1;
 
 function resize() {
@@ -271,8 +384,8 @@ function resize() {
   stage.style.height = h + 'px';
   stage.style.setProperty('--u', (w / 100) + 'px');
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  cv.width = Math.round(w * dpr);
-  cv.height = Math.round(h * dpr);
+  cv.width = dark.width = Math.round(w * dpr);
+  cv.height = dark.height = Math.round(h * dpr);
   scale = cv.width / W;
 }
 window.addEventListener('resize', resize);
@@ -280,7 +393,6 @@ resize();
 
 /* ---------- Utilidades ---------- */
 function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-const rng = mulberry32(14);
 const _rgb = {};
 function rgb(h) { if (!_rgb[h]) { const n = parseInt(h.slice(1), 16); _rgb[h] = [n >> 16 & 255, n >> 8 & 255, n & 255]; } return _rgb[h]; }
 // Color "vivo": lv = 0 -> gris apagado, lv = 1 -> color original. f oscurece/aclara.
@@ -291,12 +403,18 @@ function life(h, lv, a, f) {
   return 'rgba(' + ch(0) + ',' + ch(1) + ',' + ch(2) + ',' + (a == null ? 1 : a) + ')';
 }
 function mixHex(a, b, t) { const A = rgb(a), B = rgb(b); return 'rgb(' + ((A[0] + (B[0] - A[0]) * t) | 0) + ',' + ((A[1] + (B[1] - A[1]) * t) | 0) + ',' + ((A[2] + (B[2] - A[2]) * t) | 0) + ')'; }
-function rr(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function rr(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
 function circle(x, y, r) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); }
 function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function groundY(x) { return 652 + Math.sin(x * .012) * 9 + Math.sin(x * .031 + 1) * 5; }
+function drawStar(x, y, r, rot) {
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) { const a = rot + i * Math.PI / 5 - Math.PI / 2, rad = i % 2 ? r * .45 : r; ctx.lineTo(x + Math.cos(a) * rad, y + Math.sin(a) * rad); }
+  ctx.closePath();
+}
 
-/* ---------- Escenario: arrecife, algas, peces ---------- */
+/* ---------- Decorado de cada fondo (generado una vez, determinista) ---------- */
+const rng = mulberry32(55);
 function genBranches(x, y, ang, len, depth, out) {
   const x2 = x + Math.cos(ang) * len, y2 = y + Math.sin(ang) * len;
   out.segs.push([x, y, x2, y2, 3 + depth * 3.4]);
@@ -305,69 +423,91 @@ function genBranches(x, y, ang, len, depth, out) {
   genBranches(x2, y2, ang + .4 + (rng() - .5) * .4, len * (.7 + rng() * .12), depth - 1, out);
   if (rng() < .3) genBranches(x2, y2, ang + (rng() - .5) * .3, len * .6, depth - 1, out);
 }
-function branchCoral(x, y, len, depth, color) {
-  const o = { type: 'branch', color, segs: [], tips: [] };
-  genBranches(x, y, -Math.PI / 2 + (rng() - .5) * .2, len, depth, o);
-  return o;
-}
-const reefParts = [
-  { type: 'rock', x: 930, y: 700, rx: 200, ry: 85, color: '#8a7462' },
-  { type: 'rock', x: 1175, y: 690, rx: 150, ry: 95, color: '#7d6b5d' },
-  { type: 'fan', x: 1090, y: 640, r: 100, color: '#e63946' },
-  branchCoral(1190, 615, 55, 3, '#ff9f1c'),
-  branchCoral(770, 662, 46, 3, '#ff6f91'),
-  branchCoral(1015, 642, 38, 3, '#f15bb5'),
-  { type: 'brain', x: 900, y: 642, r: 64, color: '#9b5de5' },
-  { type: 'tubes', x: 1238, y: 668, color: '#00bbf9' },
-  { type: 'anemone', x: 838, y: 670, color: '#ff7b54' },
-  { type: 'anemone', x: 985, y: 672, color: '#fee440' },
-  { type: 'star', x: 640, y: 680, r: 17, color: '#ff8c42', rot: .3 },
-  { type: 'star', x: 1080, y: 698, r: 14, color: '#ff595e', rot: 1.1 }
-];
-const weedsBack = [
-  { x: 120, h: 150, c: '#2a9d8f' }, { x: 380, h: 120, c: '#43aa8b' }, { x: 600, h: 170, c: '#2a9d8f' },
-  { x: 720, h: 140, c: '#52b788' }, { x: 1060, h: 120, c: '#43aa8b' }
-].map(w => (w.p = rng() * 6, w));
-const weedsFront = [
-  { x: 25, h: 190, c: '#40916c' }, { x: 62, h: 130, c: '#52b788' }, { x: 255, h: 110, c: '#40916c' },
-  { x: 470, h: 155, c: '#52b788' }, { x: 1272, h: 170, c: '#40916c' }
-].map(w => (w.p = rng() * 6, w));
+function branchCoral(x, y, len, depth, color) { const o = {type: 'branch', color, segs: [], tips: []}; genBranches(x, y, -Math.PI / 2 + (rng() - .5) * .2, len, depth, o); return o; }
+
+const DECO = {
+  desembocadura: {
+    agua: [['#7a6b45', '#4b9bb5'], ['#57492c', '#2a6e86'], ['#2d2617', '#0f3a52']],
+    arena: ['#8b7550', '#6e5a3a'],
+    canas: Array.from({length: 22}, (_, i) => ({x: i < 11 ? 10 + i * 24 + rng() * 14 : 1010 + (i - 11) * 25 + rng() * 14, h: 170 + rng() * 150, p: rng() * 6})),
+    rocas: [{x: 600, y: 690, rx: 120, ry: 50}, {x: 1180, y: 700, rx: 140, ry: 60}],
+    motas: 90
+  },
+  malvarrosa: {
+    agua: [['#6fc4dd', '#4fd0f0'], ['#3d93bf', '#1a86c8'], ['#1d4f7a', '#0b3a73']],
+    arena: ['#f3e2b3', '#d9bf85'],
+    posidonia: Array.from({length: 46}, () => ({x: rng() * 1280, h: 60 + rng() * 120, p: rng() * 6, c: rng() < .5 ? '#2f9e6e' : '#4cb782'})),
+    conchas: Array.from({length: 9}, () => ({x: 80 + rng() * 1120, y: 668 + rng() * 40, r: 9 + rng() * 7, rot: (rng() - .5) * .8, c: ['#f6c9a8', '#f2a7a7', '#fbe3c4', '#e9c1f0'][(rng() * 4) | 0]})),
+    motas: 25
+  },
+  arrecife: {
+    agua: [['#173452', '#1b5c8f'], ['#0d2238', '#123f66'], ['#050f1c', '#082440']],
+    arena: ['#4f4a44', '#3a352f'],
+    partes: [
+      {type: 'rock', x: 140, y: 690, rx: 210, ry: 110, color: '#6b5f55'},
+      {type: 'rock', x: 930, y: 700, rx: 200, ry: 85, color: '#8a7462'},
+      {type: 'rock', x: 1175, y: 690, rx: 150, ry: 95, color: '#7d6b5d'},
+      {type: 'fan', x: 1090, y: 640, r: 100, color: '#e63946'},
+      branchCoral(1190, 615, 55, 3, '#ff9f1c'),
+      branchCoral(770, 662, 46, 3, '#ff6f91'),
+      branchCoral(220, 600, 50, 3, '#f15bb5'),
+      {type: 'brain', x: 900, y: 642, r: 64, color: '#9b5de5'},
+      {type: 'tubes', x: 330, y: 668, color: '#00bbf9'},
+      {type: 'anemone', x: 838, y: 670, color: '#ff7b54'},
+      {type: 'anemone', x: 620, y: 674, color: '#fee440'},
+      {type: 'star', x: 450, y: 680, r: 17, color: '#ff8c42', rot: .3},
+      {type: 'star', x: 1080, y: 698, r: 14, color: '#ff595e', rot: 1.1}
+    ],
+    motas: 40
+  }
+};
 const pebbles = [];
-for (let i = 0; i < 28; i++) { const x = rng() * W; pebbles.push([x, groundY(x) + 10 + rng() * 50, 3 + rng() * 5]); }
+for (let i = 0; i < 26; i++) { const x = rng() * W; pebbles.push([x, groundY(x) + 10 + rng() * 50, 3 + rng() * 5]); }
 const fishes = [
-  { x: 300, y: 180, s: 1, sp: 55, c: '#ffb703', ph: 0, z: 1 },
-  { x: 900, y: 250, s: -1, sp: 42, c: '#fb5607', ph: 2, z: .8 },
-  { x: 600, y: 450, s: 1, sp: 65, c: '#4cc9f0', ph: 4, z: .9 },
-  { x: 1100, y: 140, s: -1, sp: 48, c: '#f72585', ph: 1, z: .7 }
+  {x: 300, y: 180, s: 1, sp: 55, c: '#ffb703', ph: 0, z: 1},
+  {x: 900, y: 250, s: -1, sp: 42, c: '#fb5607', ph: 2, z: .8},
+  {x: 600, y: 450, s: 1, sp: 65, c: '#4cc9f0', ph: 4, z: .9},
+  {x: 1100, y: 140, s: -1, sp: 48, c: '#f72585', ph: 1, z: .7}
 ];
+const motas = Array.from({length: 120}, () => ({x: rng() * W, y: rng() * H, r: 1 + rng() * 2.5, v: 8 + rng() * 18, p: rng() * 6}));
 
 /* ---------- Estado del juego ---------- */
-const N = CONFIG.preguntas.length;
-let state = 'start';          // start | play | question | win | riddle | over
-let time = 0, oxygen = 100, cleaned = 0, reef = 0, reefTarget = 0;
+const T = CONFIG.textos;
+let state = 'start';          // start | play | question | level | over | final
+let nivel = 0;                // índice del nivel actual
+let time = 0, oxygen = 100, cleaned = 0, color = 0, colorTarget = 0, oscuro = 1, oscuroTarget = 1;
 let items = [], particles = [], target = null, current = null, answered = false;
-const sub = { x: 140, y: 240, vx: 0, vy: 0, dir: 1, tilt: 0, prop: 0 };
-const keys = { left: false, right: false, up: false, down: false };
+const sub = {x: 140, y: 250, vx: 0, vy: 0, dir: 1, tilt: 0, prop: 0};
+const keys = {left: false, right: false, up: false, down: false};
+const N = () => CONFIG.niveles[nivel].residuos.length;
+const L = () => CONFIG.niveles[nivel];
 
-function reset() {
-  oxygen = 100; cleaned = 0; reef = reefTarget = 0;
-  items = CONFIG.preguntas.map(q => ({ q, x: q.x, y: q.y, state: 'active', armed: true, anim: 0 }));
+function empezarNivel(n) {
+  nivel = n;
+  oxygen = 100; cleaned = 0; color = colorTarget = 0;
+  oscuro = oscuroTarget = L().oscuridad ? 1 : 0;
+  items = L().residuos.map((q) => ({q, x: q.x, y: q.y, state: 'active', armed: true, anim: 0}));
   particles = []; target = null; current = null;
-  Object.assign(sub, { x: 140, y: 240, vx: 0, vy: 0, dir: 1, tilt: 0 });
+  Object.assign(sub, {x: 140, y: 250, vx: 0, vy: 0, dir: 1, tilt: 0});
+  $('nivelPill').innerHTML = T.nivel + ' ' + (n + 1) + ' · ' + L().nombre.toUpperCase() +
+    (L().corriente ? ' <span class="extra">· ' + T.corriente + ' <span id="flechaCorriente">' + (L().corriente.direccion < 0 ? '←' : '→') + '</span></span>' : '') +
+    (L().oscuridad ? ' <span class="extra">· ' + T.oscuridad + '</span>' : '');
   updateHUD(false);
+  state = 'play';
+  hud.classList.add('visible');
+  showScreen(null);
 }
 
 /* ---------- Interfaz HTML ---------- */
 const hud = $('hud'), oxyBar = $('oxyBar'), oxyFill = $('oxyFill'), oxyPill = $('oxyPill'), countNum = $('countNum');
-const screens = ['startScreen', 'questionScreen', 'winScreen', 'riddleScreen', 'overScreen'];
+const screens = ['startScreen', 'questionScreen', 'levelScreen', 'overScreen', 'finalScreen'];
 function showScreen(id) {
   screens.forEach(s => $(s).classList.toggle('show', s === id));
   if (id) {
-    // En las preguntas se enfoca el panel (no la opción A) para no sugerir ninguna respuesta
     const el = id === 'questionScreen' ? $(id).querySelector('.panel') : $(id).querySelector('button');
-    if (el) setTimeout(() => el.focus({ preventScroll: true }), 60);
+    if (el) setTimeout(() => el.focus({preventScroll: true}), 60);
   } else {
-    cv.focus({ preventScroll: true });
+    cv.focus({preventScroll: true});
   }
 }
 function restartAnim(el, cls) { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
@@ -375,25 +515,44 @@ function updateHUD(animate) {
   oxyFill.style.width = Math.max(0, oxygen) + '%';
   oxyBar.classList.toggle('mid', oxygen <= 50 && oxygen > 25);
   oxyBar.classList.toggle('low', oxygen <= 25);
-  countNum.textContent = cleaned + '/' + N;
+  countNum.textContent = cleaned + '/' + N();
   if (animate === 'ok') restartAnim(countNum, 'pop');
   if (animate === 'ko') restartAnim(oxyPill, 'hit');
 }
-$('riddleText').textContent = CONFIG.adivinanza;
-$('hintText').textContent = CONFIG.pista;
 
-function startGame() {
-  reset();
-  state = 'play';
-  hud.classList.add('visible');
-  showScreen(null);
-}
-$('startBtn').addEventListener('click', startGame);
-$('retryBtn').addEventListener('click', startGame);
-$('riddleBtn').addEventListener('click', () => { state = 'riddle'; showScreen('riddleScreen'); });
+// Textos fijos desde la configuración
+$('startTag').textContent = T.etiquetaInicio;
+$('startTitle').textContent = T.titulo;
+$('startText').textContent = T.instruccion;
+$('startControls').innerHTML = T.controles;
+$('startBtn').textContent = T.empezar;
+$('reiniciarTxt').textContent = T.reiniciarNivel;
+$('qSabiasTitulo').textContent = T.sabiasQue;
+$('qContinuar').textContent = T.continuar;
+$('levelTitle').textContent = T.zonaLimpia;
+$('levelBtn').textContent = T.seguir;
+$('overTitle').textContent = T.sinOxigeno;
+$('overText').textContent = T.sinOxigenoTexto;
+$('retryBtn').textContent = T.reintentar;
+$('counter').querySelector('span').textContent = T.residuos;
+$('finalTitle').textContent = CONFIG.final.titulo;
+$('finalIntro').textContent = CONFIG.final.intro;
+$('finalRiddle').textContent = CONFIG.final.adivinanza;
+$('finalCaracola').textContent = CONFIG.final.caracola;
+
+// Para pruebas del docente: juego1/?nivel=2 empieza directamente en ese nivel
+const nivelInicial = Math.max(0, Math.min(CONFIG.niveles.length - 1, (parseInt(new URLSearchParams(location.search).get('nivel'), 10) || 1) - 1));
+$('startBtn').addEventListener('click', () => empezarNivel(nivelInicial));
+$('retryBtn').addEventListener('click', () => empezarNivel(nivel));
+$('levelBtn').addEventListener('click', () => empezarNivel(nivel + 1));
+$('reiniciarBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (state === 'play' || state === 'over') empezarNivel(nivel);
+});
 
 /* ---------- Preguntas ---------- */
-const qTag = $('qTag'), qText = $('qText'), qOpts = $('qOpts'), qFb = $('qFb');
+const qTag = $('qTag'), qText = $('qText'), qOpts = $('qOpts'), qFb = $('qFb'), qSabias = $('qSabias'), qContinuar = $('qContinuar');
+let alContinuar = null;
 function openQuestion(it) {
   state = 'question'; current = it; answered = false; target = null;
   sub.vx = sub.vy = 0;
@@ -401,18 +560,28 @@ function openQuestion(it) {
   qTag.textContent = q.nombre;
   qText.textContent = q.pregunta;
   qFb.textContent = ''; qFb.className = 'feedback';
+  qSabias.classList.add('oculto');
+  qContinuar.classList.add('oculto');
+  qOpts.classList.remove('oculto');
   qOpts.innerHTML = '';
   shuffle(q.opciones.map((_, i) => i)).forEach((oi, pos) => {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'opt';
-    const letter = document.createElement('b'); letter.textContent = 'ABC'[pos] || (pos + 1);
+    const letra = document.createElement('b'); letra.textContent = 'ABC'[pos] || (pos + 1);
     const label = document.createElement('span'); label.textContent = q.opciones[oi];
-    b.append(letter, label);
+    b.append(letra, label);
     b.addEventListener('click', () => answer(oi, b));
     qOpts.appendChild(b);
   });
   showScreen('questionScreen');
 }
+function mostrarContinuar(fn) {
+  alContinuar = fn;
+  qContinuar.classList.remove('oculto');
+  setTimeout(() => qContinuar.focus({preventScroll: true}), 60);
+}
+qContinuar.addEventListener('click', () => { const fn = alContinuar; alContinuar = null; if (fn) fn(); });
+
 function answer(oi, btn) {
   if (answered || !current) return;
   answered = true;
@@ -420,49 +589,62 @@ function answer(oi, btn) {
   const it = current;
   if (oi === it.q.correcta) {
     btn.classList.add('ok');
-    qFb.textContent = '¡Correcto! ¡A reciclar!'; qFb.className = 'feedback ok';
+    qFb.textContent = T.correcto; qFb.className = 'feedback ok';
+    // "Sabías que…" se queda hasta que pulsen Continuar
     setTimeout(() => {
-      showScreen(null); state = 'play'; current = null;
-      recycle(it);
-    }, 1100);
+      qOpts.classList.add('oculto');
+      $('qSabiasTexto').textContent = it.q.sabias;
+      qSabias.classList.remove('oculto');
+      mostrarContinuar(() => { showScreen(null); state = 'play'; current = null; recycle(it); });
+    }, 700);
   } else {
     btn.classList.add('ko');
-    qFb.textContent = '¡Oh, no! Pierdes oxígeno. Podrás intentarlo más tarde.'; qFb.className = 'feedback ko';
+    qFb.textContent = T.fallo; qFb.className = 'feedback ko';
     oxygen = Math.max(0, oxygen - CONFIG.oxigenoPorFallo);
     updateHUD('ko');
     it.armed = false;
     for (let i = 0; i < 14; i++) addBubble(sub.x + (Math.random() - .5) * 60, sub.y - 10, 3 + Math.random() * 6, -(60 + Math.random() * 80));
-    // pequeño empujón para alejarse del residuo
     const dx = sub.x - it.x, dy = sub.y - it.y, d = Math.hypot(dx, dy) || 1;
-    setTimeout(() => {
+    mostrarContinuar(() => {
       current = null;
       if (oxygen <= 0) { state = 'over'; showScreen('overScreen'); return; }
       showScreen(null); state = 'play';
       sub.vx = dx / d * 420; sub.vy = dy / d * 420;
-    }, 1900);
+    });
   }
 }
+
 function recycle(it) {
   it.state = 'recycling'; it.anim = 0;
-  cleaned++; reefTarget = cleaned / N;
+  cleaned++; colorTarget = cleaned / N();
+  if (L().oscuridad) oscuroTarget = 1 - .14 * cleaned;
   updateHUD('ok');
   for (let i = 0; i < 22; i++) {
     const a = Math.random() * Math.PI * 2, s = 60 + Math.random() * 140;
-    particles.push({ k: 's', x: it.x, y: it.y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 0, max: .9 + Math.random() * .5, c: Math.random() < .5 ? '#ffe66d' : '#7cf0a8', r: 4 + Math.random() * 4 });
+    particles.push({k: 's', x: it.x, y: it.y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 0, max: .9 + Math.random() * .5, c: Math.random() < .5 ? '#2EE6D6' : '#ffe66d', r: 4 + Math.random() * 4});
   }
-  particles.push({ k: 'r', x: it.x, y: it.y - 10, life: 0, max: 1.6 });
-  if (cleaned >= N) {
-    reefTarget = 1;
+  particles.push({k: 'r', x: it.x, y: it.y - 10, life: 0, max: 1.6});
+  if (cleaned >= N()) {
+    colorTarget = 1; oscuroTarget = L().oscuridad ? .18 : 0;
     setTimeout(() => {
-      state = 'win';
-      for (let i = 0; i < 40; i++) addBubble(Math.random() * W, H - 20 - Math.random() * 60, 3 + Math.random() * 7, -(70 + Math.random() * 90));
-      showScreen('winScreen');
+      if (nivel < CONFIG.niveles.length - 1) {
+        state = 'level';
+        const sig = CONFIG.niveles[nivel + 1];
+        $('levelSub').textContent = T.nivelSuperado.replace('{n}', nivel + 1);
+        $('levelNext').innerHTML = T.siguienteZona.replace('{nombre}', sig.nombre).replace('{aviso}', sig.aviso || '');
+        showScreen('levelScreen');
+      } else {
+        state = 'final';
+        hud.classList.remove('visible');
+        for (let i = 0; i < 40; i++) addBubble(Math.random() * W, H - 20 - Math.random() * 60, 3 + Math.random() * 7, -(70 + Math.random() * 90));
+        showScreen('finalScreen');
+      }
     }, 1800);
   }
 }
 
 /* ---------- Entrada: teclado ---------- */
-const KEYMAP = { ArrowLeft: 'left', a: 'left', A: 'left', ArrowRight: 'right', d: 'right', D: 'right', ArrowUp: 'up', w: 'up', W: 'up', ArrowDown: 'down', s: 'down', S: 'down' };
+const KEYMAP = {ArrowLeft: 'left', a: 'left', A: 'left', ArrowRight: 'right', d: 'right', D: 'right', ArrowUp: 'up', w: 'up', W: 'up', ArrowDown: 'down', s: 'down', S: 'down'};
 window.addEventListener('keydown', (e) => {
   const k = KEYMAP[e.key];
   if (k) { keys[k] = true; if (state === 'play') e.preventDefault(); }
@@ -479,12 +661,12 @@ let pointerDown = false;
 function setTarget(e) {
   const r = cv.getBoundingClientRect();
   const x = (e.clientX - r.left) / r.width * W, y = (e.clientY - r.top) / r.height * H;
-  target = { x: Math.max(70, Math.min(W - 70, x)), y: Math.max(110, Math.min(630, y)), t: 0 };
+  target = {x: Math.max(70, Math.min(W - 70, x)), y: Math.max(120, Math.min(630, y)), t: 0};
 }
 cv.addEventListener('pointerdown', (e) => {
   if (state !== 'play') return;
   e.preventDefault();
-  cv.focus({ preventScroll: true });
+  cv.focus({preventScroll: true});
   pointerDown = true; setTarget(e);
   if (cv.setPointerCapture) cv.setPointerCapture(e.pointerId);
 });
@@ -493,32 +675,66 @@ cv.addEventListener('pointermove', (e) => { if (pointerDown && state === 'play')
 
 /* ---------- Partículas ---------- */
 function addBubble(x, y, r, vy) {
-  particles.push({ k: 'b', x, y, r, vy: vy || -(30 + Math.random() * 40), ph: Math.random() * 6, life: 0, max: 5 + Math.random() * 3 });
+  particles.push({k: 'b', x, y, r, vy: vy || -(30 + Math.random() * 40), ph: Math.random() * 6, life: 0, max: 5 + Math.random() * 3});
+}
+
+/* ---------- Corriente (nivel 2) ---------- */
+const VEL_SUB = 330;
+let corrienteValor = 0, rafagaFuerte = false, estela = 0;
+// Empuje de la corriente ahora mismo (px/s, con signo). Con ráfagas: sube y baja de forma suave.
+function corrienteAhora() {
+  const c = L().corriente;
+  if (!c) return 0;
+  let f = c.fuerza;
+  if (c.rafagas) {
+    const a = time * Math.PI * 2 / (c.periodo || 7);
+    const g = Math.max(-1, Math.min(1, (Math.sin(a) + .35 * Math.sin(a * 2.3 + 1)) / 1.2));
+    f *= 1 + (c.variacion || 0) * g;
+  }
+  f = Math.min(f, VEL_SUB * .75); // nunca bloquea: siempre se puede avanzar contra ella
+  return f * (c.direccion < 0 ? -1 : 1);
 }
 
 /* ---------- Actualización ---------- */
 function update(dt) {
   time += dt;
-  reef += (reefTarget - reef) * Math.min(1, dt * 1.4);
+  color += (colorTarget - color) * Math.min(1, dt * 1.4);
+  oscuro += (oscuroTarget - oscuro) * Math.min(1, dt * 1.2);
+  corrienteValor = corrienteAhora();
+  estela += Math.abs(corrienteValor) * 2.2 * dt;
+  const corr = state === 'play' ? corrienteValor : 0;
+  // flecha doble en el marcador durante las ráfagas fuertes
+  const c = L().corriente;
+  const fuerte = !!c && Math.abs(corrienteValor) > c.fuerza * 1.12;
+  if (fuerte !== rafagaFuerte) {
+    rafagaFuerte = fuerte;
+    const fl = document.getElementById('flechaCorriente');
+    if (fl) { const s = c.direccion < 0 ? '←' : '→'; fl.textContent = fuerte ? s + s : s; }
+  }
 
-  // burbujas ambientales
   if (Math.random() < dt * 2.5) addBubble(Math.random() * W, groundY(0) + 10, 2 + Math.random() * 4);
-  if (Math.random() < dt * 1.2) addBubble(838 + (Math.random() - .5) * 20, 650, 2 + Math.random() * 3);
 
   for (const f of fishes) {
     f.x += f.s * f.sp * dt;
     if (f.x > W + 80) f.x = -80;
     if (f.x < -80) f.x = W + 80;
   }
+  const flujo = corrienteValor;
+  for (const m of motas) {
+    m.x += (flujo * 1.3 + Math.sin(time + m.p) * 6) * dt;
+    m.y += Math.sin(time * .7 + m.p) * 4 * dt;
+    if (m.x > W + 10) m.x = -10;
+    if (m.x < -10) m.x = W + 10;
+  }
 
-  if (state === 'play' || state === 'win' || state === 'riddle') updateSub(dt);
+  if (state === 'play' || state === 'level' || state === 'final') updateSub(dt, corr);
 
   if (state === 'play') {
     for (const it of items) {
       if (it.state !== 'active') continue;
       const d = Math.hypot(sub.x - it.x, sub.y - it.y);
-      if (it.armed && d < 72) { openQuestion(it); break; }
-      if (!it.armed && d > 115) it.armed = true;
+      if (it.armed && d < 74) { openQuestion(it); break; }
+      if (!it.armed && d > 118) it.armed = true;
     }
   }
   for (const it of items) {
@@ -528,7 +744,7 @@ function update(dt) {
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
     p.life += dt;
-    if (p.k === 'b') { p.y += p.vy * dt; p.x += Math.sin(time * 3 + p.ph) * 18 * dt; if (p.y < -20) p.life = p.max; }
+    if (p.k === 'b') { p.y += p.vy * dt; p.x += (Math.sin(time * 3 + p.ph) * 18 + flujo * .6) * dt; if (p.y < -20) p.life = p.max; }
     else if (p.k === 's') { p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= .96; p.vy = p.vy * .96 - 20 * dt; }
     else if (p.k === 'r') { p.y -= 35 * dt; }
     if (p.life >= p.max) particles.splice(i, 1);
@@ -536,8 +752,8 @@ function update(dt) {
   if (target) target.t += dt;
 }
 
-function updateSub(dt) {
-  const SP = 330;
+function updateSub(dt, corriente) {
+  const SP = VEL_SUB;
   let dvx = 0, dvy = 0;
   const ix = (keys.right ? 1 : 0) - (keys.left ? 1 : 0), iy = (keys.down ? 1 : 0) - (keys.up ? 1 : 0);
   if (state === 'play' && (ix || iy)) {
@@ -546,101 +762,125 @@ function updateSub(dt) {
     dvx = ix / m * SP; dvy = iy / m * SP;
   } else if (state === 'play' && target) {
     const dx = target.x - sub.x, dy = target.y - sub.y, d = Math.hypot(dx, dy);
-    if (d < 8) target = null;
+    if (corriente) {
+      // con corriente: motor a tope hasta llegar; al llegar se suelta y la corriente lo arrastra
+      if (d < 30) target = null;
+      else { dvx = dx / d * SP; dvy = dy / d * SP; }
+    } else if (d < 8) target = null;
     else { const s = Math.min(SP, d * 3.2); dvx = dx / d * s; dvy = dy / d * s; }
   }
   const k = Math.min(1, dt * 5);
   sub.vx += (dvx - sub.vx) * k; sub.vy += (dvy - sub.vy) * k;
-  sub.x += sub.vx * dt; sub.y += sub.vy * dt;
-  if (sub.x < 70) { sub.x = 70; sub.vx = 0; }
-  if (sub.x > W - 70) { sub.x = W - 70; sub.vx = 0; }
-  if (sub.y < 110) { sub.y = 110; sub.vy = 0; }
+  sub.x += (sub.vx + corriente) * dt; sub.y += sub.vy * dt;
+  if (sub.x < 70) { sub.x = 70; sub.vx = Math.max(0, sub.vx); }
+  if (sub.x > W - 70) { sub.x = W - 70; sub.vx = Math.min(0, sub.vx); }
+  if (sub.y < 120) { sub.y = 120; sub.vy = 0; }
   if (sub.y > 630) { sub.y = 630; sub.vy = 0; }
   if (sub.vx > 25) sub.dir = 1; else if (sub.vx < -25) sub.dir = -1;
   sub.tilt += ((sub.vy / SP) * .28 - sub.tilt) * k;
   const sp = Math.hypot(sub.vx, sub.vy);
-  sub.prop += dt * (3 + sp * .05);
-  if (sp > 60 && Math.random() < dt * 14) addBubble(sub.x - sub.dir * 70, sub.y + (Math.random() - .5) * 10, 2 + Math.random() * 3, -25);
+  sub.prop += dt * (4 + sp * .05);
+  if (sp > 60 && Math.random() < dt * 14) addBubble(sub.x - sub.dir * 62, sub.y + (Math.random() - .5) * 10, 2 + Math.random() * 3, -25);
 }
 
-/* ---------- Dibujo ---------- */
-function drawWater() {
-  const lv = reef;
+/* ---------- Dibujo: fondos ---------- */
+function drawWater(deco) {
+  const lv = color;
   const g = ctx.createLinearGradient(0, 0, 0, H);
-  g.addColorStop(0, mixHex('#5d827c', '#4cc9f0', lv));
-  g.addColorStop(.45, mixHex('#3a5754', '#1679bd', lv));
-  g.addColorStop(1, mixHex('#1d2b2b', '#0a2f63', lv));
+  g.addColorStop(0, mixHex(deco.agua[0][0], deco.agua[0][1], lv));
+  g.addColorStop(.45, mixHex(deco.agua[1][0], deco.agua[1][1], lv));
+  g.addColorStop(1, mixHex(deco.agua[2][0], deco.agua[2][1], lv));
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-  // rayos de luz
-  ctx.save(); ctx.globalCompositeOperation = 'lighter';
-  for (let i = 0; i < 5; i++) {
-    const x = 120 + i * 270 + Math.sin(time * .35 + i * 1.7) * 40;
-    ctx.fillStyle = 'rgba(255,255,255,' + (0.03 + 0.035 * lv) + ')';
-    ctx.beginPath(); ctx.moveTo(x - 30, 0); ctx.lineTo(x + 45, 0); ctx.lineTo(x + 190, H * .85); ctx.lineTo(x + 40, H * .85); ctx.closePath(); ctx.fill();
+  if (L().fondo !== 'arrecife') {
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 5; i++) {
+      const x = 120 + i * 270 + Math.sin(time * .35 + i * 1.7) * 40;
+      ctx.fillStyle = 'rgba(255,255,255,' + (0.025 + 0.035 * lv) + ')';
+      ctx.beginPath(); ctx.moveTo(x - 30, 0); ctx.lineTo(x + 45, 0); ctx.lineTo(x + 190, H * .85); ctx.lineTo(x + 40, H * .85); ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
   }
-  ctx.restore();
   // siluetas lejanas
-  ctx.fillStyle = mixHex('#2c403f', '#0f4c81', lv);
+  ctx.fillStyle = 'rgba(0,10,25,0.28)';
   ctx.beginPath(); ctx.moveTo(0, H);
   for (let x = 0; x <= W; x += 40) ctx.lineTo(x, 585 + Math.sin(x * .007 + 2) * 30 + Math.sin(x * .021) * 12);
   ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
 }
 
-function drawWeed(w) {
-  const n = 9, seg = w.h / n;
-  let x = w.x, y = groundY(w.x) + 8;
-  ctx.strokeStyle = life(w.c, .25 + .75 * reef); ctx.lineCap = 'round';
-  for (let i = 0; i < n; i++) {
-    const t = (i + 1) / n;
-    const nx = w.x + Math.sin(time * 1.4 + w.p + i * .55) * 16 * t;
-    const ny = groundY(w.x) + 8 - seg * (i + 1);
-    ctx.lineWidth = 15 * (1 - t) + 4;
-    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(nx, ny); ctx.stroke();
-    x = nx; y = ny;
-  }
-}
-
-function drawSand() {
-  const lv = .35 + .65 * reef;
+function drawSand(deco) {
+  const lv = .45 + .55 * color;
   const g = ctx.createLinearGradient(0, 630, 0, H);
-  g.addColorStop(0, life('#ecd9a6', lv)); g.addColorStop(1, life('#c9a46a', lv));
+  g.addColorStop(0, life(deco.arena[0], lv)); g.addColorStop(1, life(deco.arena[1], lv));
   ctx.fillStyle = g;
   ctx.beginPath(); ctx.moveTo(0, H);
   for (let x = 0; x <= W; x += 16) ctx.lineTo(x, groundY(x));
   ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = life('#b08d57', lv, .7);
+  ctx.fillStyle = life(deco.arena[1], lv, .7, .85);
   for (const p of pebbles) { ctx.beginPath(); ctx.ellipse(p[0], p[1], p[2] * 1.4, p[2], 0, 0, Math.PI * 2); ctx.fill(); }
 }
 
-function drawLeftRock() {
-  ctx.fillStyle = life('#6c7480', .5 + .5 * reef);
-  ctx.beginPath(); ctx.moveTo(0, H); ctx.lineTo(0, 470);
-  ctx.quadraticCurveTo(60, 425, 125, 468); ctx.quadraticCurveTo(195, 505, 215, 585);
-  ctx.quadraticCurveTo(238, 650, 228, H); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = life('#4a515c', .5 + .5 * reef);
-  ctx.beginPath(); ctx.moveTo(0, H); ctx.lineTo(0, 540); ctx.quadraticCurveTo(90, 520, 150, 600); ctx.quadraticCurveTo(180, 650, 170, H); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = life('#52b788', .15 + .85 * reef);
-  [[30, 455, 22], [70, 448, 18], [110, 462, 16], [160, 498, 13]].forEach(m => { ctx.beginPath(); ctx.ellipse(m[0], m[1], m[2], m[2] * .55, 0, 0, Math.PI * 2); ctx.fill(); });
+function drawMotas(deco, colorMota) {
+  const n = Math.round(deco.motas * (1 - .6 * color));
+  ctx.fillStyle = colorMota;
+  for (let i = 0; i < n && i < motas.length; i++) { const m = motas[i]; circle(m.x, m.y, m.r); ctx.fill(); }
 }
 
-function drawStar(x, y, r, rot) {
-  ctx.beginPath();
-  for (let i = 0; i < 10; i++) {
-    const a = rot + i * Math.PI / 5 - Math.PI / 2, rad = i % 2 ? r * .45 : r;
-    ctx.lineTo(x + Math.cos(a) * rad, y + Math.sin(a) * rad);
+function drawCanas(deco) {
+  ctx.lineCap = 'round';
+  for (const c of deco.canas) {
+    const base = groundY(c.x) + 10;
+    const sway = Math.sin(time * 1.1 + c.p) * 10;
+    ctx.strokeStyle = life('#7c8a3a', .35 + .65 * color); ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.moveTo(c.x, base); ctx.quadraticCurveTo(c.x + sway * .4, base - c.h * .5, c.x + sway, base - c.h); ctx.stroke();
+    // hoja
+    ctx.strokeStyle = life('#93a64a', .35 + .65 * color); ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(c.x, base - c.h * .35); ctx.quadraticCurveTo(c.x + 30 + sway, base - c.h * .55, c.x + 46 + sway, base - c.h * .45); ctx.stroke();
+    // espiga
+    ctx.fillStyle = life('#7a4f2a', .4 + .6 * color);
+    ctx.beginPath(); ctx.ellipse(c.x + sway, base - c.h - 14, 6, 18, sway * .02, 0, Math.PI * 2); ctx.fill();
   }
-  ctx.closePath();
 }
 
-function drawReef() {
-  const lv = reef;
-  for (const p of reefParts) {
-    if (p.type === 'rock') {
-      ctx.fillStyle = life(p.color, .4 + .6 * lv);
-      ctx.beginPath(); ctx.ellipse(p.x, p.y, p.rx, p.ry, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = life(p.color, .4 + .6 * lv, 1, .78);
-      ctx.beginPath(); ctx.ellipse(p.x + p.rx * .12, p.y + p.ry * .35, p.rx * .85, p.ry * .6, 0, 0, Math.PI * 2); ctx.fill();
-    } else if (p.type === 'branch') {
+function drawPosidonia(deco, delante) {
+  ctx.lineCap = 'round';
+  deco.posidonia.forEach((p, idx) => {
+    if ((idx % 3 === 0) !== delante) return;
+    const base = groundY(p.x) + 8;
+    ctx.strokeStyle = life(p.c, .35 + .65 * color); ctx.lineWidth = 7;
+    for (let b = -1; b <= 1; b++) {
+      const sway = Math.sin(time * 1.5 + p.p + b) * 14 + corrienteValor * .16;
+      ctx.beginPath(); ctx.moveTo(p.x + b * 5, base);
+      ctx.quadraticCurveTo(p.x + b * 9 + sway * .4, base - p.h * .55, p.x + b * 12 + sway, base - p.h * (0.8 + .2 * Math.abs(b - 1) / 2));
+      ctx.stroke();
+    }
+  });
+}
+
+function drawConchas(deco) {
+  for (const s of deco.conchas) {
+    ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.rot);
+    ctx.fillStyle = life(s.c, .5 + .5 * color);
+    ctx.beginPath(); ctx.moveTo(0, s.r * .6); ctx.arc(0, s.r * .6, s.r * 1.2, Math.PI * 1.15, Math.PI * 1.85); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(120,70,40,0.45)'; ctx.lineWidth = 1.5;
+    for (let a = -3; a <= 3; a++) { ctx.beginPath(); ctx.moveTo(0, s.r * .6); ctx.lineTo(Math.sin(a * .28) * s.r * 1.15, s.r * .6 - Math.cos(a * .28) * s.r * 1.15); ctx.stroke(); }
+    ctx.restore();
+  }
+}
+
+function drawRocas(lista, col) {
+  for (const r of lista) {
+    ctx.fillStyle = life(col, .5 + .5 * color);
+    ctx.beginPath(); ctx.ellipse(r.x, r.y, r.rx, r.ry, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = life(col, .5 + .5 * color, 1, .78);
+    ctx.beginPath(); ctx.ellipse(r.x + r.rx * .12, r.y + r.ry * .35, r.rx * .85, r.ry * .6, 0, 0, Math.PI * 2); ctx.fill();
+  }
+}
+
+function drawArrecife(deco) {
+  const lv = color;
+  for (const p of deco.partes) {
+    if (p.type === 'rock') { drawRocas([p], p.color); }
+    else if (p.type === 'branch') {
       ctx.strokeStyle = life(p.color, lv); ctx.lineCap = 'round';
       for (const s of p.segs) { ctx.lineWidth = s[4]; ctx.beginPath(); ctx.moveTo(s[0], s[1]); ctx.lineTo(s[2], s[3]); ctx.stroke(); }
       ctx.fillStyle = life(p.color, lv, 1, 1.2);
@@ -650,73 +890,111 @@ function drawReef() {
       ctx.beginPath(); ctx.ellipse(p.x, p.y, p.r, p.r * .72, 0, Math.PI, 0); ctx.closePath(); ctx.fill();
       ctx.save(); ctx.clip();
       ctx.strokeStyle = life(p.color, lv, 1, .7); ctx.lineWidth = 3;
-      for (let k = 1; k <= 4; k++) {
-        const yy = p.y - k * p.r * .15;
-        ctx.beginPath();
-        for (let x = p.x - p.r; x <= p.x + p.r; x += 4) ctx.lineTo(x, yy + Math.sin(x * .2 + k) * 4);
-        ctx.stroke();
-      }
+      for (let k = 1; k <= 4; k++) { const yy = p.y - k * p.r * .15; ctx.beginPath(); for (let x = p.x - p.r; x <= p.x + p.r; x += 4) ctx.lineTo(x, yy + Math.sin(x * .2 + k) * 4); ctx.stroke(); }
       ctx.restore();
     } else if (p.type === 'fan') {
       ctx.strokeStyle = life(p.color, lv, .9); ctx.lineWidth = 3; ctx.lineCap = 'round';
       const sway = Math.sin(time * .8) * .04;
-      for (let a = -Math.PI * .92; a <= -Math.PI * .08; a += Math.PI / 13) {
-        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + Math.cos(a + sway) * p.r, p.y + Math.sin(a + sway) * p.r); ctx.stroke();
-      }
+      for (let a = -Math.PI * .92; a <= -Math.PI * .08; a += Math.PI / 13) { ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + Math.cos(a + sway) * p.r, p.y + Math.sin(a + sway) * p.r); ctx.stroke(); }
       ctx.lineWidth = 2;
       for (const f of [.45, .7, .95]) { ctx.beginPath(); ctx.arc(p.x, p.y, p.r * f, -Math.PI * .92 + sway, -Math.PI * .08 + sway); ctx.stroke(); }
     } else if (p.type === 'tubes') {
       [[-34, 72], [-12, 100], [10, 64]].forEach(t => {
-        ctx.fillStyle = life(p.color, lv);
-        rr(p.x + t[0], p.y - t[1], 20, t[1], 8); ctx.fill();
-        ctx.fillStyle = life(p.color, lv, 1, .45);
-        ctx.beginPath(); ctx.ellipse(p.x + t[0] + 10, p.y - t[1] + 5, 7, 3.5, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = life(p.color, lv); rr(ctx, p.x + t[0], p.y - t[1], 20, t[1], 8); ctx.fill();
+        ctx.fillStyle = life(p.color, lv, 1, .45); ctx.beginPath(); ctx.ellipse(p.x + t[0] + 10, p.y - t[1] + 5, 7, 3.5, 0, 0, Math.PI * 2); ctx.fill();
       });
     } else if (p.type === 'anemone') {
       ctx.strokeStyle = life(p.color, lv); ctx.lineWidth = 6; ctx.lineCap = 'round';
       for (let i = 0; i < 11; i++) {
         const a = -Math.PI + (i + .5) / 11 * Math.PI + Math.sin(time * 2 + i * .6) * .22;
-        const ex = p.x + Math.cos(a) * 32, ey = p.y - 6 + Math.sin(a) * 34;
         ctx.beginPath(); ctx.moveTo(p.x, p.y - 6);
-        ctx.quadraticCurveTo(p.x + Math.cos(a) * 14 + Math.sin(time * 2 + i) * 4, p.y - 6 + Math.sin(a) * 18, ex, ey); ctx.stroke();
+        ctx.quadraticCurveTo(p.x + Math.cos(a) * 14, p.y - 6 + Math.sin(a) * 18, p.x + Math.cos(a) * 32, p.y - 6 + Math.sin(a) * 34); ctx.stroke();
       }
-      ctx.fillStyle = life(p.color, lv, 1, .75);
-      ctx.beginPath(); ctx.ellipse(p.x, p.y, 17, 10, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = life(p.color, lv, 1, .75); ctx.beginPath(); ctx.ellipse(p.x, p.y, 17, 10, 0, 0, Math.PI * 2); ctx.fill();
     } else if (p.type === 'star') {
-      ctx.fillStyle = life(p.color, lv);
-      drawStar(p.x, p.y, p.r, p.rot); ctx.fill();
+      ctx.fillStyle = life(p.color, lv); drawStar(p.x, p.y, p.r, p.rot); ctx.fill();
       ctx.strokeStyle = life(p.color, lv, 1, .7); ctx.lineWidth = 2; ctx.stroke();
     }
   }
 }
 
-function drawFish(f) {
+function drawFish(f, alpha) {
   const y = f.y + Math.sin(time * 1.8 + f.ph) * 12;
   ctx.save(); ctx.translate(f.x, y); ctx.scale(f.s * f.z, f.z);
-  ctx.globalAlpha = .45 + .55 * reef;
+  ctx.globalAlpha = alpha;
   const wag = Math.sin(time * 9 + f.ph) * 5;
-  ctx.fillStyle = life(f.c, reef);
+  ctx.fillStyle = life(f.c, color);
   ctx.beginPath(); ctx.moveTo(-18, 0); ctx.lineTo(-36, -12 + wag); ctx.lineTo(-36, 12 + wag); ctx.closePath(); ctx.fill();
   ctx.beginPath(); ctx.ellipse(0, 0, 24, 13, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(-4, -12, 5, 24);
   ctx.fillStyle = '#fff'; circle(12, -3, 4.5); ctx.fill();
   ctx.fillStyle = '#111'; circle(13, -3, 2.2); ctx.fill();
   ctx.restore();
 }
 
-/* Residuos (dibujados centrados en 0,0) */
+function drawCorriente() {
+  const c = L().corriente;
+  if (!c) return;
+  const fuerza = Math.abs(corrienteValor) / c.fuerza; // ~0,7 suave … ~1,3 ráfaga
+  const dir = c.direccion < 0 ? -1 : 1;
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+  const n = Math.round(16 + 14 * fuerza);
+  for (let i = 0; i < n; i++) {
+    const y = 130 + (i * 97) % 490;
+    const base = (estela * (0.8 + (i % 3) * .2) + i * 211) % (W + 300);
+    const x = dir > 0 ? base - 150 : W + 150 - base;
+    const len = (40 + (i % 4) * 16) * (0.6 + fuerza * .7);
+    ctx.globalAlpha = (.18 + .14 * Math.sin(time * 2 + i)) * (0.6 + fuerza * .6);
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + dir * len * .5, y - 6, x + dir * len, y); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawFondo() {
+  const deco = DECO[L().fondo];
+  drawWater(deco);
+  if (L().fondo === 'desembocadura') {
+    drawMotas(deco, 'rgba(120,95,55,0.45)');
+    drawSand(deco);
+    drawRocas(deco.rocas, '#6d6150');
+    drawCanas(deco);
+    fishes.slice(0, 2).forEach(f => drawFish(f, .25 + .75 * color));
+  } else if (L().fondo === 'malvarrosa') {
+    drawPosidonia(deco, false);
+    drawSand(deco);
+    drawConchas(deco);
+    fishes.forEach(f => drawFish(f, .5 + .5 * color));
+    drawMotas(deco, 'rgba(255,255,255,0.35)');
+    drawCorriente();
+  } else {
+    drawSand(deco);
+    drawArrecife(deco);
+    fishes.forEach(f => drawFish(f, .3 + .7 * color));
+    drawMotas(deco, 'rgba(180,220,255,0.25)');
+  }
+}
+
+/* ---------- Dibujo: residuos (centrados en 0,0) ---------- */
 const DRAW = {
   botella() {
     ctx.rotate(-.35);
-    rr(-42, -15, 60, 30, 12); ctx.fillStyle = 'rgba(185,235,255,.88)'; ctx.fill();
+    rr(ctx, -42, -15, 60, 30, 12); ctx.fillStyle = 'rgba(185,235,255,.88)'; ctx.fill();
     ctx.beginPath(); ctx.moveTo(17, -15); ctx.quadraticCurveTo(28, -15, 30, -8); ctx.lineTo(38, -8); ctx.lineTo(38, 8); ctx.lineTo(30, 8); ctx.quadraticCurveTo(28, 15, 17, 15); ctx.closePath(); ctx.fill();
     ctx.strokeStyle = '#3d85b0'; ctx.lineWidth = 3; ctx.stroke();
     ctx.fillStyle = '#ef476f'; ctx.fillRect(-24, -14.5, 24, 29);
     ctx.fillStyle = '#fff'; ctx.fillRect(-24, -3, 24, 5);
-    rr(-42, -15, 60, 30, 12); ctx.stroke();
-    rr(37, -10, 10, 20, 3); ctx.fillStyle = '#1d7bd8'; ctx.fill(); ctx.strokeStyle = '#0f4c81'; ctx.stroke();
-    ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(-34, -8); ctx.lineTo(-28, -8); ctx.moveTo(4, -8); ctx.lineTo(14, -8); ctx.stroke();
+    rr(ctx, -42, -15, 60, 30, 12); ctx.stroke();
+    rr(ctx, 37, -10, 10, 20, 3); ctx.fillStyle = '#1d7bd8'; ctx.fill(); ctx.strokeStyle = '#0f4c81'; ctx.stroke();
+  },
+  vidrio() {
+    ctx.rotate(.3);
+    ctx.fillStyle = 'rgba(46,160,90,.82)'; ctx.strokeStyle = '#1b6b3c'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(-40, -17); ctx.lineTo(10, -17); ctx.quadraticCurveTo(24, -17, 28, -7); ctx.lineTo(44, -7); ctx.lineTo(44, 7); ctx.lineTo(28, 7); ctx.quadraticCurveTo(24, 17, 10, 17); ctx.lineTo(-40, 17); ctx.quadraticCurveTo(-46, 0, -40, -17); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#16542f'; rr(ctx, 42, -9, 7, 18, 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(220,255,230,.85)'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(-32, -9); ctx.lineTo(4, -9); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.fillRect(-20, -4, 16, 9);
   },
   lata() {
     ctx.rotate(1.25);
@@ -728,9 +1006,16 @@ const DRAW = {
     ctx.fillStyle = '#adb5bd'; ctx.beginPath(); ctx.ellipse(0, 26, 18, 6, 0, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#dee2e6'; ctx.beginPath(); ctx.ellipse(0, -26, 18, 6, 0, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = '#6c757d'; ctx.lineWidth = 2; ctx.stroke();
-    ctx.fillStyle = '#868e96'; ctx.beginPath(); ctx.ellipse(4, -26, 6, 2.5, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = 'rgba(80,0,10,.5)'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(-10, 14); ctx.lineTo(-2, 18); ctx.lineTo(-8, 22); ctx.stroke();
+  },
+  colilla() {
+    ctx.rotate(-.25); ctx.scale(1.35, 1.35);
+    rr(ctx, -26, -8, 22, 16, 4); ctx.fillStyle = '#e8913f'; ctx.fill();
+    ctx.fillStyle = 'rgba(150,80,20,.55)';
+    for (const [x, y] of [[-21, -3], [-15, 2], [-10, -4], [-18, 4], [-8, 3]]) { circle(x, y, 1.6); ctx.fill(); }
+    rr(ctx, -5, -7, 26, 14, 3); ctx.fillStyle = '#f4f1e8'; ctx.fill();
+    ctx.strokeStyle = '#8f8a80'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = '#5b5b5b'; ctx.beginPath(); ctx.ellipse(21, 0, 4, 7, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#8d4a12'; ctx.lineWidth = 1.5; rr(ctx, -26, -8, 22, 16, 4); ctx.stroke();
   },
   bolsa() {
     ctx.translate(0, Math.sin(time * 1.5) * 8);
@@ -742,15 +1027,26 @@ const DRAW = {
     ctx.quadraticCurveTo(-44, 26, -22, 40 + Math.sin(time * 2) * 3);
     ctx.quadraticCurveTo(0, 46, 22, 40 + Math.cos(time * 2) * 3);
     ctx.quadraticCurveTo(44, 26, 32, -18); ctx.closePath();
-    ctx.fillStyle = 'rgba(255,255,255,.78)'; ctx.fill(); ctx.stroke();
-    ctx.strokeStyle = 'rgba(143,179,201,.8)'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(-14, -8); ctx.quadraticCurveTo(-18, 12, -10, 30); ctx.moveTo(10, -6); ctx.quadraticCurveTo(16, 14, 12, 28); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.fill(); ctx.stroke();
+  },
+  bolsaRota() {
+    const trozos = [[-34, -18, .2], [-8, -30, 1.1], [22, -16, 2.3], [36, 14, .7], [6, 22, 1.8], [-28, 18, 2.9], [-4, -2, .4]];
+    trozos.forEach(([x, y, f], i) => {
+      ctx.save();
+      ctx.translate(x + Math.sin(time * 1.3 + f) * 6, y + Math.cos(time * 1.1 + f) * 5);
+      ctx.rotate(time * .4 + f);
+      const s = 9 + (i % 3) * 3;
+      ctx.beginPath(); ctx.moveTo(-s, -s * .5); ctx.lineTo(s * .3, -s); ctx.lineTo(s, s * .2); ctx.lineTo(-s * .2, s * .8); ctx.closePath();
+      ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.fill();
+      ctx.strokeStyle = '#8fb3c9'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.restore();
+    });
   },
   red() {
     ctx.save();
     ctx.beginPath(); ctx.ellipse(0, 0, 60, 38, -.15, 0, Math.PI * 2); ctx.clip();
     ctx.fillStyle = 'rgba(30,60,70,.25)'; ctx.fillRect(-70, -50, 140, 100);
-    ctx.strokeStyle = '#1d3d47'; ctx.lineWidth = 3;
+    ctx.strokeStyle = '#2b5866'; ctx.lineWidth = 3;
     for (let i = -100; i <= 100; i += 14) {
       ctx.beginPath(); ctx.moveTo(i, -50); ctx.lineTo(i + 40, 50); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(i, -50); ctx.lineTo(i - 40, 50); ctx.stroke();
@@ -766,14 +1062,14 @@ const DRAW = {
     ctx.translate(0, Math.sin(time * 1.3 + 1) * 7);
     ctx.rotate(-.45 + Math.sin(time * 1.1) * .12);
     ctx.scale(1.2, 1.2);
-    ctx.save(); rr(-45, -5, 74, 10, 4); ctx.clip();
+    ctx.save(); rr(ctx, -45, -5, 74, 10, 4); ctx.clip();
     ctx.fillStyle = '#fff'; ctx.fillRect(-46, -6, 80, 12);
     ctx.fillStyle = '#ff4d6d';
     for (let i = -60; i < 40; i += 14) { ctx.beginPath(); ctx.moveTo(i, 6); ctx.lineTo(i + 8, -6); ctx.lineTo(i + 15, -6); ctx.lineTo(i + 7, 6); ctx.fill(); }
     ctx.restore();
-    ctx.strokeStyle = '#c9184a'; ctx.lineWidth = 2; rr(-45, -5, 74, 10, 4); ctx.stroke();
+    ctx.strokeStyle = '#c9184a'; ctx.lineWidth = 2; rr(ctx, -45, -5, 74, 10, 4); ctx.stroke();
     ctx.save(); ctx.translate(28, 0); ctx.rotate(-.7);
-    rr(0, -5, 26, 10, 4); ctx.fillStyle = '#ff4d6d'; ctx.fill(); ctx.stroke();
+    rr(ctx, 0, -5, 26, 10, 4); ctx.fillStyle = '#ff4d6d'; ctx.fill(); ctx.stroke();
     ctx.restore();
   }
 };
@@ -783,31 +1079,42 @@ function drawItem(it) {
   ctx.save();
   ctx.translate(it.x, it.y);
   if (it.state === 'active') {
-    // halo para que se vea que es interactivo
     const pulse = .5 + .5 * Math.sin(time * 3 + it.x);
-    const R = 56 + pulse * 6;
+    const R = 58 + pulse * 6;
     ctx.globalAlpha = it.armed ? 1 : .35;
     const g = ctx.createRadialGradient(0, 0, 10, 0, 0, R);
-    g.addColorStop(0, 'rgba(255,230,109,.35)'); g.addColorStop(1, 'rgba(255,230,109,0)');
+    g.addColorStop(0, 'rgba(46,230,214,.28)'); g.addColorStop(1, 'rgba(46,230,214,0)');
     ctx.fillStyle = g; circle(0, 0, R); ctx.fill();
     ctx.setLineDash([10, 8]); ctx.lineDashOffset = -time * 25;
-    ctx.strokeStyle = 'rgba(255,236,140,.9)'; ctx.lineWidth = 3; circle(0, 0, R); ctx.stroke();
+    ctx.strokeStyle = 'rgba(46,230,214,.95)'; ctx.lineWidth = 3; circle(0, 0, R); ctx.stroke();
     ctx.setLineDash([]);
     ctx.globalAlpha = it.armed ? 1 : .6;
   } else {
     const t = it.anim, e = t * t;
-    ctx.translate(0, -t * 50);
-    ctx.rotate(t * 6);
-    ctx.scale(1 - e, 1 - e);
+    ctx.translate(0, -t * 50); ctx.rotate(t * 6); ctx.scale(1 - e, 1 - e);
     ctx.globalAlpha = 1 - e;
   }
-  DRAW[it.q.tipo] && DRAW[it.q.tipo]();
+  if (DRAW[it.q.tipo]) DRAW[it.q.tipo]();
   ctx.restore();
+}
+
+// Destellos que ayudan a encontrar los residuos en la oscuridad
+function drawDestellos() {
+  for (const it of items) {
+    if (it.state !== 'active') continue;
+    const fase = (time * .9 + it.x * .01) % 2;
+    const a = fase < .5 ? Math.sin(fase / .5 * Math.PI) : 0;
+    if (a <= 0) continue;
+    ctx.save(); ctx.globalAlpha = a * .85;
+    ctx.fillStyle = '#bdfbf5';
+    drawStar(it.x + 12, it.y - 14, 12, time); ctx.fill();
+    ctx.restore();
+  }
 }
 
 function drawRecycleBadge(x, y, s, alpha) {
   ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.globalAlpha = alpha;
-  ctx.fillStyle = '#2ecc71'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
+  ctx.fillStyle = '#13a596'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
   circle(0, 0, 26); ctx.fill(); ctx.stroke();
   ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.fillStyle = '#fff';
   for (let k = 0; k < 3; k++) {
@@ -820,41 +1127,135 @@ function drawRecycleBadge(x, y, s, alpha) {
   ctx.restore();
 }
 
-function drawSub() {
+/* ---------- Dibujo: submarino amarillo ---------- */
+const FOCO = {x: 66, y: 4}; // punto del foco delantero (coordenadas locales del submarino)
+const CONTORNO = '#1b1b1b';
+
+function casco() {
+  ctx.beginPath();
+  ctx.moveTo(-58, 2);
+  ctx.bezierCurveTo(-58, -24, -24, -36, 8, -36);
+  ctx.bezierCurveTo(44, -36, 66, -18, 66, 2);
+  ctx.bezierCurveTo(66, 20, 44, 36, 8, 36);
+  ctx.bezierCurveTo(-24, 36, -58, 26, -58, 2);
+  ctx.closePath();
+}
+function remache(x, y) { ctx.fillStyle = '#d99a00'; circle(x, y, 2.2); ctx.fill(); ctx.strokeStyle = 'rgba(60,40,0,.7)'; ctx.lineWidth = 1; ctx.stroke(); }
+function ojoDeBuey(x, y) {
+  ctx.fillStyle = '#aeb6be'; circle(x, y, 11.5); ctx.fill();
+  ctx.strokeStyle = CONTORNO; ctx.lineWidth = 2.5; ctx.stroke();
+  const g = ctx.createRadialGradient(x - 2, y - 3, 1, x, y, 8);
+  g.addColorStop(0, '#9af0ff'); g.addColorStop(1, '#1597d8');
+  ctx.fillStyle = g; circle(x, y, 7.8); ctx.fill();
+  ctx.strokeStyle = '#5d6770'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(x, y, 5, Math.PI * 1.1, Math.PI * 1.45); ctx.stroke();
+  ctx.fillStyle = '#6c757d';
+  for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3 + .5; circle(x + Math.cos(a) * 9.7, y + Math.sin(a) * 9.7, 1.1); ctx.fill(); }
+}
+
+function drawSubmarino() {
   const bob = Math.sin(time * 2.2) * 3;
   ctx.save(); ctx.translate(sub.x, sub.y + bob); ctx.scale(sub.dir, 1); ctx.rotate(sub.tilt);
-  // haz de luz
-  const lg = ctx.createLinearGradient(58, 0, 250, 0);
-  lg.addColorStop(0, 'rgba(255,250,200,.35)'); lg.addColorStop(1, 'rgba(255,250,200,0)');
-  ctx.fillStyle = lg; ctx.beginPath(); ctx.moveTo(58, 4); ctx.lineTo(250, -45); ctx.lineTo(250, 65); ctx.closePath(); ctx.fill();
-  // hélice
-  ctx.fillStyle = '#6c757d'; ctx.fillRect(-68, -4, 14, 8);
-  ctx.fillStyle = '#adb5bd';
-  const b1 = Math.abs(Math.sin(sub.prop * 6)), b2 = Math.abs(Math.cos(sub.prop * 6));
-  ctx.beginPath(); ctx.ellipse(-70, -10 * b1, 4, 11 * b1 + 1, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(-70, 10 * b2, 4, 11 * b2 + 1, 0, 0, Math.PI * 2); ctx.fill();
-  // aletas
-  ctx.fillStyle = '#f4a261'; ctx.strokeStyle = '#b5651d'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(-44, -14); ctx.lineTo(-64, -32); ctx.lineTo(-58, -10); ctx.closePath(); ctx.fill(); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(-44, 14); ctx.lineTo(-64, 32); ctx.lineTo(-58, 10); ctx.closePath(); ctx.fill(); ctx.stroke();
-  // periscopio
-  ctx.strokeStyle = '#6c757d'; ctx.lineWidth = 5; ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.moveTo(6, -44); ctx.lineTo(6, -62); ctx.lineTo(20, -62); ctx.stroke();
-  // torre
-  rr(-20, -48, 42, 24, 9); ctx.fillStyle = '#ffd23f'; ctx.fill(); ctx.strokeStyle = '#b07d00'; ctx.lineWidth = 3; ctx.stroke();
-  // casco
-  const bg = ctx.createLinearGradient(0, -30, 0, 30);
-  bg.addColorStop(0, '#ffe680'); bg.addColorStop(1, '#f2ae00');
-  ctx.fillStyle = bg; ctx.beginPath(); ctx.ellipse(0, 0, 60, 31, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-  ctx.strokeStyle = '#e76f51'; ctx.lineWidth = 5;
-  ctx.beginPath(); ctx.moveTo(-52, 14); ctx.quadraticCurveTo(0, 30, 52, 14); ctx.stroke();
-  // ventanillas
-  for (const wx of [-22, 6, 34]) {
-    ctx.fillStyle = '#bde0fe'; ctx.strokeStyle = '#3a6ea5'; ctx.lineWidth = 3;
-    circle(wx, -3, 8.5); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = 'rgba(255,255,255,.9)'; circle(wx - 3, -6, 2.5); ctx.fill();
+  ctx.lineJoin = 'round';
+  // haz de luz (en el nivel oscuro lo hace la capa de oscuridad)
+  if (!L().oscuridad) {
+    const lg = ctx.createLinearGradient(FOCO.x, 0, 250, 0);
+    lg.addColorStop(0, 'rgba(255,245,190,.42)'); lg.addColorStop(1, 'rgba(255,245,190,0)');
+    ctx.fillStyle = lg; ctx.beginPath(); ctx.moveTo(FOCO.x, FOCO.y - 4); ctx.lineTo(250, -44); ctx.lineTo(250, 56); ctx.lineTo(FOCO.x, FOCO.y + 4); ctx.closePath(); ctx.fill();
   }
-  ctx.fillStyle = '#fff3b0'; circle(57, 3, 5); ctx.fill();
+  // aletas de cola (naranjas)
+  for (const s of [-1, 1]) {
+    ctx.beginPath(); ctx.moveTo(-34, 14 * s); ctx.lineTo(-74, 48 * s); ctx.lineTo(-54, 2 * s); ctx.closePath();
+    ctx.fillStyle = '#ff6b2c'; ctx.fill(); ctx.strokeStyle = CONTORNO; ctx.lineWidth = 3; ctx.stroke();
+    ctx.strokeStyle = 'rgba(150,40,0,.6)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(-46, 12 * s); ctx.lineTo(-68, 40 * s); ctx.stroke();
+  }
+  // eje y hélice
+  rr(ctx, -74, -7, 20, 14, 4); ctx.fillStyle = '#9aa3ab'; ctx.fill(); ctx.strokeStyle = CONTORNO; ctx.lineWidth = 2.5; ctx.stroke();
+  const b1 = Math.abs(Math.sin(sub.prop * 6)), b2 = Math.abs(Math.cos(sub.prop * 6));
+  for (const [sgn, b] of [[-1, b1], [1, b2]]) {
+    ctx.beginPath(); ctx.ellipse(-80, sgn * (13 * b + 1), 6, 13 * b + 2, 0, 0, Math.PI * 2);
+    ctx.fillStyle = '#d5dade'; ctx.fill(); ctx.strokeStyle = CONTORNO; ctx.lineWidth = 2.2; ctx.stroke();
+  }
+  ctx.fillStyle = '#9aa3ab'; circle(-80, 0, 4.5); ctx.fill(); ctx.strokeStyle = CONTORNO; ctx.lineWidth = 2; ctx.stroke();
+  // periscopio
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = CONTORNO; ctx.lineWidth = 11;
+  ctx.beginPath(); ctx.moveTo(8, -52); ctx.lineTo(8, -74); ctx.lineTo(26, -74); ctx.stroke();
+  ctx.strokeStyle = '#a7b0b8'; ctx.lineWidth = 6.5;
+  ctx.beginPath(); ctx.moveTo(8, -52); ctx.lineTo(8, -74); ctx.lineTo(26, -74); ctx.stroke();
+  ctx.fillStyle = '#5ad1ff'; ctx.beginPath(); ctx.ellipse(29, -74, 3, 5, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = CONTORNO; ctx.lineWidth = 2; ctx.stroke();
+  // torreta
+  const gt = ctx.createLinearGradient(0, -58, 0, -30);
+  gt.addColorStop(0, '#ffe55c'); gt.addColorStop(1, '#f2b200');
+  rr(ctx, -18, -56, 50, 28, 9); ctx.fillStyle = gt; ctx.fill(); ctx.strokeStyle = CONTORNO; ctx.lineWidth = 3; ctx.stroke();
+  rr(ctx, -10, -50, 34, 16, 3); ctx.strokeStyle = 'rgba(80,55,0,.65)'; ctx.lineWidth = 1.5; ctx.stroke();
+  remache(-7, -47); remache(21, -47); remache(-7, -37); remache(21, -37);
+  // casco
+  const g = ctx.createLinearGradient(0, -36, 0, 36);
+  g.addColorStop(0, '#ffe24d'); g.addColorStop(.55, '#ffc400'); g.addColorStop(1, '#f29a00');
+  casco(); ctx.fillStyle = g; ctx.fill();
+  ctx.save(); casco(); ctx.clip();
+  // franja roja
+  ctx.strokeStyle = '#e53935'; ctx.lineWidth = 7; ctx.lineCap = 'butt';
+  ctx.beginPath(); ctx.moveTo(-60, 10); ctx.quadraticCurveTo(4, 26, 68, 10); ctx.stroke();
+  // juntas de las placas
+  ctx.strokeStyle = 'rgba(90,60,0,.55)'; ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.moveTo(-36, -30); ctx.quadraticCurveTo(-44, 2, -36, 32); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(48, -28); ctx.quadraticCurveTo(56, 2, 48, 30); ctx.stroke();
+  // brillo
+  ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.beginPath(); ctx.ellipse(6, -24, 34, 6, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+  casco(); ctx.strokeStyle = CONTORNO; ctx.lineWidth = 3.5; ctx.stroke();
+  // escotilla inferior
+  rr(ctx, -10, 24, 40, 9, 4); ctx.fillStyle = '#f0a000'; ctx.fill(); ctx.strokeStyle = 'rgba(60,40,0,.8)'; ctx.lineWidth = 1.6; ctx.stroke();
+  // remaches del casco
+  [[-46, -14], [-48, 2], [-46, 18], [-28, -28], [42, -24], [56, -8], [56, 12], [44, 26], [-26, 28]].forEach(([x, y]) => remache(x, y));
+  // ojos de buey
+  ojoDeBuey(-22, -4); ojoDeBuey(6, -4); ojoDeBuey(34, -4);
+  // foco delantero
+  ctx.fillStyle = '#aeb6be'; circle(FOCO.x - 2, FOCO.y, 8); ctx.fill(); ctx.strokeStyle = CONTORNO; ctx.lineWidth = 2.5; ctx.stroke();
+  const gl = ctx.createRadialGradient(FOCO.x, FOCO.y, 0, FOCO.x, FOCO.y, 6);
+  gl.addColorStop(0, '#ffffff'); gl.addColorStop(1, '#ffe98a');
+  ctx.fillStyle = gl; circle(FOCO.x, FOCO.y, 5); ctx.fill();
+  ctx.restore();
+}
+
+/* ---------- Oscuridad del nivel 3: solo se ve lo que ilumina el foco ---------- */
+function drawOscuridad() {
+  if (oscuro <= 0.01) return;
+  dctx.setTransform(scale, 0, 0, scale, 0, 0);
+  dctx.globalCompositeOperation = 'source-over';
+  dctx.clearRect(0, 0, W, H);
+  dctx.fillStyle = 'rgba(1,6,14,' + Math.min(.95, oscuro * .95) + ')';
+  dctx.fillRect(0, 0, W, H);
+  dctx.globalCompositeOperation = 'destination-out';
+  const bob = Math.sin(time * 2.2) * 3;
+  const x = sub.x, y = sub.y + bob;
+  // halo alrededor del submarino
+  let g = dctx.createRadialGradient(x, y, 20, x, y, 175);
+  g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(.6, 'rgba(0,0,0,.85)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+  dctx.fillStyle = g; dctx.beginPath(); dctx.arc(x, y, 175, 0, Math.PI * 2); dctx.fill();
+  // cono del foco hacia delante
+  const ang = sub.dir > 0 ? sub.tilt : Math.PI - sub.tilt;
+  // el cono sale del foco delantero del submarino (FOCO, girado con la inclinación)
+  const fx = FOCO.x * sub.dir, fy = FOCO.y;
+  const ca = Math.cos(sub.tilt * sub.dir), sa = Math.sin(sub.tilt * sub.dir);
+  const ox = x + fx * ca - fy * sa, oy = y + fx * sa + fy * ca;
+  const LARGO = 470, AB = .42;
+  g = dctx.createRadialGradient(ox, oy, 10, ox, oy, LARGO);
+  g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(.65, 'rgba(0,0,0,.85)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+  dctx.fillStyle = g;
+  dctx.beginPath(); dctx.moveTo(ox, oy);
+  dctx.arc(ox, oy, LARGO, ang - AB, ang + AB);
+  dctx.closePath(); dctx.fill();
+  dctx.globalCompositeOperation = 'source-over';
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(dark, 0, 0); ctx.restore();
+  // un leve tono cálido dentro del cono
+  ctx.save(); ctx.globalCompositeOperation = 'soft-light'; ctx.globalAlpha = .25 * oscuro;
+  ctx.fillStyle = '#fff2c0'; ctx.beginPath(); ctx.moveTo(ox, oy); ctx.arc(ox, oy, LARGO * .8, ang - AB, ang + AB); ctx.closePath(); ctx.fill();
   ctx.restore();
 }
 
@@ -865,11 +1266,8 @@ function drawParticles() {
       ctx.strokeStyle = 'rgba(255,255,255,' + (.6 * Math.min(1, a * 3)) + ')'; ctx.lineWidth = 1.5;
       ctx.fillStyle = 'rgba(255,255,255,.08)';
       circle(p.x, p.y, p.r); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = 'rgba(255,255,255,.7)'; circle(p.x - p.r * .35, p.y - p.r * .35, p.r * .25); ctx.fill();
     } else if (p.k === 's') {
-      ctx.globalAlpha = a; ctx.fillStyle = p.c;
-      drawStar(p.x, p.y, p.r, time * 4); ctx.fill();
-      ctx.globalAlpha = 1;
+      ctx.globalAlpha = a; ctx.fillStyle = p.c; drawStar(p.x, p.y, p.r, time * 4); ctx.fill(); ctx.globalAlpha = 1;
     } else if (p.k === 'r') {
       const t = p.life / p.max;
       drawRecycleBadge(p.x, p.y, .6 + Math.min(1, t * 4) * .6, t < .7 ? 1 : (1 - t) / .3);
@@ -881,26 +1279,20 @@ function drawTarget() {
   if (!target || state !== 'play') return;
   const a = Math.max(0, 1 - target.t * .8);
   if (a <= 0) return;
-  ctx.strokeStyle = 'rgba(255,255,255,' + (.8 * a) + ')'; ctx.lineWidth = 3;
-  const r = 10 + (target.t * 30) % 18;
-  circle(target.x, target.y, r); ctx.stroke();
+  ctx.strokeStyle = 'rgba(46,230,214,' + (.9 * a) + ')'; ctx.lineWidth = 3;
+  circle(target.x, target.y, 10 + (target.t * 30) % 18); ctx.stroke();
   circle(target.x, target.y, 4); ctx.fillStyle = 'rgba(255,255,255,' + a + ')'; ctx.fill();
 }
 
 function draw() {
   ctx.setTransform(scale, 0, 0, scale, 0, 0);
-  drawWater();
-  weedsBack.forEach(drawWeed);
-  drawSand();
-  drawLeftRock();
-  drawReef();
-  fishes.forEach(drawFish);
+  drawFondo();
+  if (L().fondo === 'malvarrosa') drawPosidonia(DECO.malvarrosa, true);
   items.forEach(drawItem);
   drawTarget();
-  drawSub();
-  weedsFront.forEach(drawWeed);
+  drawSubmarino();
+  if (L().oscuridad) { drawOscuridad(); ctx.setTransform(scale, 0, 0, scale, 0, 0); drawDestellos(); }
   drawParticles();
-  // viñeta suave
   const v = ctx.createRadialGradient(W / 2, H / 2, H * .45, W / 2, H / 2, W * .72);
   v.addColorStop(0, 'rgba(0,10,25,0)'); v.addColorStop(1, 'rgba(0,10,25,.45)');
   ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
@@ -914,7 +1306,9 @@ function loop(now) {
   draw();
   requestAnimationFrame(loop);
 }
-reset();
+// Estado inicial (detrás de la pantalla de inicio se ve el nivel 1)
+items = L().residuos.map((q) => ({q, x: q.x, y: q.y, state: 'active', armed: true, anim: 0}));
+updateHUD(false);
 requestAnimationFrame(loop);
 })();
 </script>
